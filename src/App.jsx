@@ -9,6 +9,12 @@ import Dashboard from './components/Dashboard';
 import Signup from './components/auth/Signup';
 import Login from './components/auth/Login';
 import TermsCondition from './components/TermsCondition';
+import ViewProfile from './components/ViewProfile';
+import ForgotPassword from './components/FogotPassword';
+import Logout from './components/auth/Logout';
+import PresciptionTrack from './components/PresciptionTrack';
+import DoctorAccess from './components/DoctorAccess';
+import PrescriptionEdit from './components/PrescriptionEdit';
 
 const appRouter = createBrowserRouter([
   {
@@ -34,6 +40,30 @@ const appRouter = createBrowserRouter([
   {
     path: "/terms",
     element: <TermsCondition/>
+  },
+  {
+    path: "/view-profile",
+    element: <ViewProfile/>
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword/>
+  },
+  {
+    path: "/logout",
+    element: <Logout/>
+  },
+  {
+    path: "/prescription-tracking",
+    element: <PresciptionTrack/>
+  },
+  {
+    path: "/doctor-access",
+    element: <DoctorAccess/>
+  },
+  {
+    path: "/prescription-edit",
+    element: <PrescriptionEdit/>
   },
 ]);
 
