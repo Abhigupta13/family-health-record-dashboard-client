@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { FaPen, FaCalendarAlt } from 'react-icons/fa'; // Import FontAwesome pen and calendar icon
+import React, { useState, useEffect } from "react";
+import { FaPen, FaTrashAlt } from "react-icons/fa";
+import PrescriptionEdit from "./PrescriptionEdit"; // Import the PrescriptionEdit component
+import { CalendarIcon } from "lucide-react";
 
 const PrescriptionTrack = () => {
-  // Load prescriptions from local storage, or initialize with an empty array
   const [prescriptions, setPrescriptions] = useState(() => {
-    const savedPrescriptions = localStorage.getItem('prescriptions');
+    const savedPrescriptions = localStorage.getItem("prescriptions");
     return savedPrescriptions ? JSON.parse(savedPrescriptions) : [];
   });
-
   const [newPrescription, setNewPrescription] = useState({
-    medication: '',
-    doctor: '',
-    date: '',
-    dosage: '',
-    usage: ''
+    medication: "",
+    doctor: "",
+    date: "",
+    dosage: "",
+    usage: "",
   });
+  const [editing, setEditing] = useState(null); // Track the prescription being edited
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,21 +31,43 @@ const PrescriptionTrack = () => {
       id: prescriptions.length + 1,
     };
 
-    // Update state and local storage with the new prescription
     const updatedPrescriptions = [...prescriptions, newPrescriptionEntry];
     setPrescriptions(updatedPrescriptions);
 
-    // Save updated prescriptions to local storage
-    localStorage.setItem('prescriptions', JSON.stringify(updatedPrescriptions));
+    localStorage.setItem("prescriptions", JSON.stringify(updatedPrescriptions));
 
-    // Clear the form fields
     setNewPrescription({
-      medication: '',
-      doctor: '',
-      date: '',
-      dosage: '',
-      usage: ''
+      medication: "",
+      doctor: "",
+      date: "",
+      dosage: "",
+      usage: "",
     });
+  };
+
+  const handleEditPrescription = (prescription) => {
+    setEditing(prescription);
+  };
+
+  const handleUpdatePrescription = (updatedPrescription) => {
+    const updatedPrescriptions = prescriptions.map((prescription) =>
+      prescription.id === updatedPrescription.id
+        ? updatedPrescription
+        : prescription
+    );
+
+    setPrescriptions(updatedPrescriptions);
+    localStorage.setItem("prescriptions", JSON.stringify(updatedPrescriptions));
+
+    setEditing(null); // Stop editing
+  };
+
+  const handleDeletePrescription = (id) => {
+    const updatedPrescriptions = prescriptions.filter(
+      (prescription) => prescription.id !== id
+    );
+    setPrescriptions(updatedPrescriptions);
+    localStorage.setItem("prescriptions", JSON.stringify(updatedPrescriptions));
   };
 
   return (
@@ -54,12 +77,22 @@ const PrescriptionTrack = () => {
           Prescription Tracking
         </h1>
 
-        {/* Prescription Add Form */}
+        {/* Add Prescription Form */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-3xl font-semibold text-teal-600 mb-4">Add Prescription</h2>
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleAddPrescription(); }}>
+          <h2 className="text-3xl font-semibold text-teal-600 mb-4">
+            Add Prescription
+          </h2>
+          <form
+            className="space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddPrescription();
+            }}
+          >
             <div>
-              <label className="block text-md text-left font-semibold text-gray-700">Medication Name</label>
+              <label className="block text-md text-left font-semibold text-gray-700">
+                Medication Name
+              </label>
               <input
                 type="text"
                 name="medication"
@@ -71,7 +104,9 @@ const PrescriptionTrack = () => {
               />
             </div>
             <div>
-              <label className="block text-md text-left font-semibold text-gray-700">Doctor's Name</label>
+              <label className="block text-md text-left font-semibold text-gray-700">
+                Doctor's Name
+              </label>
               <input
                 type="text"
                 name="doctor"
@@ -83,7 +118,9 @@ const PrescriptionTrack = () => {
               />
             </div>
             <div>
-              <label className="block text-md text-left font-semibold text-gray-700">Prescription Date</label>
+              <label className="block text-md text-left font-semibold text-gray-700">
+                Prescription Date
+              </label>
               <div className="relative">
                 <input
                   type="date"
@@ -94,12 +131,14 @@ const PrescriptionTrack = () => {
                   required
                 />
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-teal-500">
-                  <FaCalendarAlt size={20} /> {/* Adding calendar icon from react-icons */}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </span>
               </div>
             </div>
             <div>
-              <label className="block text-md text-left font-semibold text-gray-700">Dosage</label>
+              <label className="block text-md text-left font-semibold text-gray-700">
+                Dosage
+              </label>
               <input
                 type="text"
                 name="dosage"
@@ -111,7 +150,9 @@ const PrescriptionTrack = () => {
               />
             </div>
             <div>
-              <label className="block text-md text-left font-semibold text-gray-700">Usage Instructions</label>
+              <label className="block text-md text-left font-semibold text-gray-700">
+                Usage Instructions
+              </label>
               <input
                 type="text"
                 name="usage"
@@ -124,7 +165,7 @@ const PrescriptionTrack = () => {
             </div>
             <button
               type="submit"
-              className="w-full bg-teal-600 text-white p-3 rounded-md mt-4 hover:bg-teal-700 transition duration-300"
+              className="bg-teal-600 text-white p-3 rounded-md hover:bg-teal-700"
             >
               Add Prescription
             </button>
@@ -132,25 +173,49 @@ const PrescriptionTrack = () => {
         </div>
 
         {/* Prescription List */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold text-teal-600 mb-4">Prescriptions</h2>
-          <div className="space-y-6">
-            {prescriptions.map((prescription) => (
-              <div key={prescription.id} className="border-b py-6 flex justify-between items-center">
-                <div>
-                  <h3 className="font-semibold text-lg text-teal-800">{prescription.medication}</h3>
-                  <p className="text-sm text-gray-600">Doctor: {prescription.doctor}</p>
-                  <p className="text-sm text-gray-600">Date: {prescription.date}</p>
-                  <p className="text-sm text-gray-600">Dosage: {prescription.dosage}</p>
-                  <p className="text-sm text-gray-600">Usage: {prescription.usage}</p>
-                </div>
-                <button className="text-teal-600 hover:text-teal-800">
-                  <FaPen /> {/* Pen icon for editing */}
+        <div className="space-y-4">
+          {prescriptions.map((prescription) => (
+            <div
+              key={prescription.id}
+              className="flex justify-between items-center bg-white p-6 rounded-lg shadow-md"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <div className="font-semibold text-3xl text-teal-600 text-center mb-2">Prescriptions</div>
+                <h3 className="font-medium text-lg mt-3">
+                  Medicine suggested: {prescription.medication}
+                </h3>
+                <p className="text-gray-500">Doctor: {prescription.doctor}</p>
+                <p className="text-gray-600">Dosage: {prescription.dosage}</p>
+                <p className="text-gray-500">Usage: {prescription.usage}</p>
+                <p className="text-teal-600">Date: {prescription.date}</p>
+              </div>
+
+              <div className="flex items-center">
+                <button
+                  onClick={() => handleEditPrescription(prescription)}
+                  className="text-teal-600 hover:text-teal-800 mr-4"
+                >
+                  <FaPen className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => handleDeletePrescription(prescription.id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <FaTrashAlt className="w-5 h-5" />
                 </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+
+        {/* Edit Prescription Modal */}
+        {editing && (
+          <PrescriptionEdit
+            prescription={editing}
+            onSave={handleUpdatePrescription}
+            onCancel={() => setEditing(null)}
+          />
+        )}
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ import ForgotPassword from './components/FogotPassword';
 import Logout from './components/auth/Logout';
 import PresciptionTrack from './components/PresciptionTrack';
 import DoctorAccess from './components/DoctorAccess';
+import PrescriptionEdit from './components/PrescriptionEdit';
 
 const appRouter = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ const appRouter = createBrowserRouter([
   {
     path: "/doctor-access",
     element: <DoctorAccess/>
+  },
+  {
+    path: "/prescription-edit",
+    element: <PrescriptionEdit/>
   },
 ]);
 
