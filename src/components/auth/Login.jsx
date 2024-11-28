@@ -3,6 +3,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const handleSubmit = (e) => {
@@ -54,12 +55,12 @@ const Login = () => {
                 Remember Me
               </label>
             </div>
-            <a
+            <Link
               href="/forgot-password"
               className="text-sm text-teal-600 hover:underline"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           {/* Submit Button */}
