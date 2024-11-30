@@ -40,9 +40,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex w-full max-w-7xl items-center justify-between p-4 bg-teal-600 text-white shadow-lg relative">
+    <nav className="flex w-full items-center justify-between p-6 bg-white text-white shadow-lg relative">
       {/* Logo Section */}
-      <div className="text-3xl font-bold flex items-center space-x-2">
+      <div className="text-3xl ml-4 text-[#1569B8] font-bold flex items-center space-x-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
@@ -56,7 +56,7 @@ const Navbar = () => {
             clipRule="evenodd"
           />
         </svg>
-        <Link to="/" className="text-4xl font-bold text-[#4B6708]">
+        <Link to="/" className="text-4xl font-bold text-[#1569B8]">
           HealthApp
         </Link>
       </div>
@@ -87,17 +87,17 @@ const Navbar = () => {
       <div
         className={`${
           isMenuOpen ? "block" : "hidden"
-        } md:flex md:items-center space-y-4 md:space-y-0 md:space-x-6`}
+        } md:flex md:items-center space-y-4 md:space-y-0 mr-4 md:space-x-6`}
       >
         <Link
           to="/"
-          className="block md:inline text-lg text-gray-700 hover:text-teal-200"
+          className="block md:inline text-xl text-gray-700 hover:text-[#4B6708]"
         >
           Home
         </Link>
         <Link
           to="/dashboard"
-          className="block md:inline text-lg text-gray-700 hover:text-teal-200"
+          className="block md:inline text-xl text-gray-700 hover:text-[#4B6708]"
         >
           Dashboard
         </Link>
@@ -105,7 +105,7 @@ const Navbar = () => {
         {/* Features Dropdown */}
         <div className="relative z-40 navbar-dropdown">
           <button
-            className="text-lg text-gray-700 hover:text-teal-200"
+            className="text-xl text-gray-700 hover:text-[#4B6708]"
             onClick={toggleFeaturesDropdown}
           >
             Features
@@ -130,7 +130,7 @@ const Navbar = () => {
         {/* Profile Dropdown */}
         <div className="relative z-40 navbar-dropdown">
           <button
-            className="text-lg text-gray-700 hover:text-teal-200"
+            className="text-xl text-gray-700 hover:text-[#4B6708]"
             onClick={toggleProfileDropdown}
           >
             Profile
@@ -140,7 +140,7 @@ const Navbar = () => {
               isProfileDropdownOpen ? "block" : "hidden"
             }`}
           >
-            <Link to="/view-profile" className="block text-teal-300 hover:text-teal-500">
+            <Link to="/view-profile" className="block text-teal-300 hover:text-[#4B6708]">
               View Profile
             </Link>
             <button
@@ -155,7 +155,7 @@ const Navbar = () => {
         {/* Contact Us Dropdown */}
         <div className="relative z-40 navbar-dropdown">
           <button
-            className="text-lg text-gray-700 hover:text-teal-200"
+            className="text-xl text-gray-700 hover:text-[#4B6708]"
             onClick={toggleContactDropdown}
           >
             Contact Us

@@ -4,6 +4,10 @@
 
 /* ... */
 
+/* *{
+  padding: 0;
+  margin: 0;
+}
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -20,6 +24,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -31,6 +36,7 @@ a:hover {
 
 body {
   margin: 0;
+  padding: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
@@ -49,7 +55,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  /* background-color: #1a1a1a; */
+  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -137,4 +143,4 @@ button:focus-visible {
   body {
     @apply bg-background text-foreground;
   }
-}
+} */
