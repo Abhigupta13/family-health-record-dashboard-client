@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate(); // Use navigate hook for programmatic navigation
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Login submitted!");
+    
+    // For now, just simulate a successful login and navigate to the home page.
+    // You can replace this with your actual login logic (API call, etc.)
+    if (email && password) {
+      // Save token or session data if needed
+      localStorage.setItem("authToken", "your-auth-token"); // Example token storage
+
+      // Redirect to home page
+      navigate("/"); // Navigate to home page
+    } else {
+      alert("Please fill in both fields");
+    }
   };
 
   return (
@@ -27,6 +42,8 @@ const Login = () => {
               placeholder="Enter your email"
               required
               className="mt-1 w-full"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)} // Bind email input
             />
           </div>
 
@@ -41,6 +58,8 @@ const Login = () => {
               placeholder="Enter your password"
               required
               className="mt-1 w-full"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} // Bind password input
             />
           </div>
 
@@ -56,7 +75,7 @@ const Login = () => {
               </label>
             </div>
             <Link
-              href="/forgot-password"
+              to="/forgot-password"
               className="text-sm text-teal-600 hover:underline"
             >
               Forgot Password?
@@ -73,7 +92,7 @@ const Login = () => {
 
         {/* Divider */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">Don't have an account? <a href="/signup" className="text-teal-600 hover:underline">Sign Up</a></p>
+          <p className="text-sm text-gray-600">Don't have an account? <Link to="/signup" className="text-teal-600 hover:underline">Sign Up</Link></p>
         </div>
       </div>
     </div>
