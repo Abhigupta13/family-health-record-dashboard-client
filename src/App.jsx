@@ -15,6 +15,9 @@ import Logout from './components/auth/Logout';
 import PresciptionTrack from './components/PresciptionTrack';
 import DoctorAccess from './components/DoctorAccess';
 import PrescriptionEdit from './components/PrescriptionEdit';
+import OcrSection from './components/OcrSection';
+import CtaSection from './components/CtaSection';
+import Testimonial from './components/Testimonial';
 
 const appRouter = createBrowserRouter([
   {
@@ -64,6 +67,18 @@ const appRouter = createBrowserRouter([
   {
     path: "/prescription-edit",
     element: <PrescriptionEdit/>
+  },
+  {
+    path: "/ocr-section",
+    element: <OcrSection/>
+  },
+  {
+    path: "/cta-section",
+    element: <CtaSection/>
+  },
+  {
+    path: "/testimonial",
+    element: <Testimonial/>
   },
 ]);
 
