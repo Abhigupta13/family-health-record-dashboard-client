@@ -57,7 +57,7 @@ const Navbar = () => {
           />
         </svg>
         <Link to="/" className="text-4xl font-bold text-[#1569B8]">
-          HealthApp
+          HealthCare
         </Link>
       </div>
 
