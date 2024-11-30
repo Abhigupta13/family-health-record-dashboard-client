@@ -1,14 +1,12 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComment } from "@fortawesome/free-solid-svg-icons"; // Importing the chat bubble icon
 
 const Faq = () => {
-  // State to manage which FAQ is open
   const [openIndex, setOpenIndex] = useState(null);
 
-  // Toggle FAQ dropdown
   const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index); // Toggle between open and closed
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   const faqs = [
@@ -82,9 +80,13 @@ const Faq = () => {
         {/* Leave a Message Section */}
         <div className="leave-message mt-12 bg-[#a09bf6] text-white p-8 rounded-xl">
           <div className="flex items-center justify-center mb-4">
-            <FontAwesomeIcon icon="fa-solid fa-messages-question" />
+            <FontAwesomeIcon
+              icon={faComment}
+              className="text-5xl mr-2 mb-3" // Larger icon and center it
+            />
+          </div>
+          <div className="flex items-center justify-center mb-4 mt-2">
             <span className="text-xl font-semibold">Still have Questions</span>
-            {/* Font Awesome Icon */}
           </div>
           <p className="text-center text-lg">
             If you have any further questions or need additional assistance,
