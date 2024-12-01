@@ -87,7 +87,7 @@ const Navbar = () => {
       <div
         className={`${
           isMenuOpen ? "block" : "hidden"
-        } md:flex md:items-center space-y-4 md:space-y-0 mr-4 md:space-x-6`}
+        } md:flex md:items-center space-y-4 space-x-8 md:space-y-0 mr-8 md:space-x-10`}
       >
         <Link
           to="/"
@@ -115,14 +115,57 @@ const Navbar = () => {
               isFeaturesDropdownOpen ? "block" : "hidden"
             }`}
           >
-            <Link to="/feature/1" className="block text-white hover:text-teal-500">
+            <Link
+              to="/health-insight"
+              className="block text-white hover:text-teal-500"
+            >
               Health Insights
             </Link>
-            <Link to="/feature/2" className="block text-white hover:text-teal-500">
+            <Link
+              to="/dashboard"
+              className="block text-white hover:text-teal-500"
+            >
               Medical Records
             </Link>
-            <Link to="/feature/3" className="block text-white hover:text-teal-500">
+            <Link
+              to="/emergency-call"
+              className="block text-white hover:text-teal-500"
+            >
               Emergency Contacts
+            </Link>
+          </div>
+        </div>
+
+        {/* Contact Us Dropdown */}
+        <div className="relative z-40 navbar-dropdown">
+          <button
+            className="text-xl text-gray-700 hover:text-[#4B6708]"
+            onClick={toggleContactDropdown}
+          >
+            Contact Us
+          </button>
+          <div
+            className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
+              isContactDropdownOpen ? "block" : "hidden"
+            }`}
+          >
+            <Link
+              to="/emergency-call"
+              className="block text-white hover:text-teal-500"
+            >
+              Emergency Booking
+            </Link>
+            <Link
+              to="/contact-us"
+              className="block text-white hover:text-teal-500"
+            >
+              Contact Us
+            </Link>
+            <Link
+              to="/chat-with-us"
+              className="block text-white hover:text-teal-500"
+            >
+              Chat with us
             </Link>
           </div>
         </div>
@@ -140,7 +183,10 @@ const Navbar = () => {
               isProfileDropdownOpen ? "block" : "hidden"
             }`}
           >
-            <Link to="/view-profile" className="block text-teal-300 hover:text-[#4B6708]">
+            <Link
+              to="/view-profile"
+              className="block text-teal-300 hover:text-[#4B6708]"
+            >
               View Profile
             </Link>
             <button
@@ -151,39 +197,18 @@ const Navbar = () => {
             </button>
           </div>
         </div>
-
-        {/* Contact Us Dropdown */}
-        <div className="relative z-40 navbar-dropdown">
-          <button
-            className="text-xl text-gray-700 hover:text-[#4B6708]"
-            onClick={toggleContactDropdown}
-          >
-            Contact Us
-          </button>
-          <div
-            className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
-              isContactDropdownOpen ? "block" : "hidden"
-            }`}
-          >
-            <Link to="/emergency-book" className="block text-white hover:text-teal-500">
-              Emergency Booking
-            </Link>
-            <Link to="/call-us" className="block text-white hover:text-teal-500">
-              Call Us
-            </Link>
-            <Link to="/chat-with-us" className="block text-white hover:text-teal-500">
-                Chat with us
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container"> {/* Added z-50 */}
+        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container">
+          {" "}
+          {/* Added z-50 */}
           <div className="w-full max-w-md bg-[#D16F6F] p-8 shadow-lg rounded-lg">
             <h2 className="text-2xl font-bold text-center mb-6">Logging Out</h2>
-            <p className="text-center text-lg mb-6">Are you sure you want to log out?</p>
+            <p className="text-center text-lg mb-6">
+              Are you sure you want to log out?
+            </p>
             <div className="flex justify-center space-x-4">
               <button
                 onClick={handleLogout}

@@ -33,22 +33,22 @@ const Footer = () => {
           </div>
 
           {/* Social Media Icons */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-6">
             <FontAwesomeIcon
               icon={faFacebook}
-              className="text-xl cursor-pointer"
+              className="text-2xl cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faTwitter}
-              className="text-xl cursor-pointer"
+              className="text-2xl cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faInstagram}
-              className="text-xl cursor-pointer"
+              className="text-2xl cursor-pointer"
             />
             <FontAwesomeIcon
               icon={faLinkedin}
-              className="text-xl cursor-pointer"
+              className="text-2xl cursor-pointer"
             />
           </div>
         </div>
