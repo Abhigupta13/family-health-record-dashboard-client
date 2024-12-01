@@ -17,7 +17,7 @@ const Login = () => {
     // You can replace this with your actual login logic (API call, etc.)
     if (email && password) {
       // Save token or session data if needed
-      localStorage.setItem("authToken", "your-auth-token"); // Example token storage
+      localStorage.setItem("authToken", "alkshjdjriuefnkdj"); // Example token storage
 
       // Redirect to home page
       navigate("/"); // Navigate to home page

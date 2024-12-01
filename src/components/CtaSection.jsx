@@ -21,7 +21,7 @@ const CtaSection = () => {
           onClick={() => navigate("/signup")}
           variant="outline"
           size="lg"
-          className="text-teal-600 border-teal-600 hover:bg-teal-600 hover:text-white transition-colors"
+          className="rounded-xl text-teal-600 border-teal-600 hover:bg-teal-600 hover:text-white transition-colors"
         >
           Sign Up Now
         </Button>

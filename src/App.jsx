@@ -18,6 +18,11 @@ import PrescriptionEdit from './components/PrescriptionEdit';
 import OcrSection from './components/OcrSection';
 import CtaSection from './components/CtaSection';
 import Testimonial from './components/Testimonial';
+import HealthSupport from './components/HealthSupport';
+import ContactUs from './components/ContactUs';
+import EmergencyCall from './components/shared/EmergencyCall';
+import ChatWithUs from './components/ChatWithUs';
+import HealthInsight from './components/HealthInsight';
 
 const appRouter = createBrowserRouter([
   {
@@ -65,6 +70,10 @@ const appRouter = createBrowserRouter([
     element: <DoctorAccess/>
   },
   {
+    path: "/health-support",
+    element: <HealthSupport/>
+  },
+  {
     path: "/prescription-edit",
     element: <PrescriptionEdit/>
   },
@@ -79,6 +88,22 @@ const appRouter = createBrowserRouter([
   {
     path: "/testimonial",
     element: <Testimonial/>
+  },
+  {
+    path: "/contact-us",
+    element: <ContactUs/>
+  },
+  {
+    path: "/emergency-call",
+    element: <EmergencyCall/>
+  },
+  {
+    path: "/chat-with-us",
+    element: <ChatWithUs/>
+  },
+  {
+    path: "/health-insight",
+    element: <HealthInsight/>
   },
 ]);
 

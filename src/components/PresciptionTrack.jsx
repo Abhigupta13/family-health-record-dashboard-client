@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaPen, FaTrashAlt } from "react-icons/fa";
 import PrescriptionEdit from "./PrescriptionEdit"; // Import the PrescriptionEdit component
-import { CalendarIcon } from "lucide-react";
 import Navbar from "./shared/Navbar";
 
 const PrescriptionTrack = () => {
@@ -78,7 +77,7 @@ const PrescriptionTrack = () => {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-teal-50">
         {/* <Navbar/> */}
         <div className="max-w-4xl w-full p-6">
-          <h1 className="text-3xl font-bold text-white bg-gradient-to-r from-teal-500 to-teal-600 p-4 rounded-md text-center mb-6">
+          <h1 className="text-3xl font-bold text-white bg-gradient-to-r from-teal-500 to-teal-600 p-4 rounded-xl text-center mb-6">
             Prescription Tracking
           </h1>
   
@@ -135,9 +134,6 @@ const PrescriptionTrack = () => {
                     className="w-full p-3 border border-gray-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                     required
                   />
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-teal-500">
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </span>
                 </div>
               </div>
               <div>
@@ -170,7 +166,7 @@ const PrescriptionTrack = () => {
               </div>
               <button
                 type="submit"
-                className="bg-teal-600 text-white p-3 rounded-md hover:bg-teal-700"
+                className="bg-teal-600 text-white p-3 rounded-xl hover:bg-teal-700"
               >
                 Add Prescription
               </button>

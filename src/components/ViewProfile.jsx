@@ -74,7 +74,7 @@ const ViewProfile = () => {
       <div className="flex justify-center mb-8 space-x-6">
         <button
           onClick={() => setActiveTab("signup")}
-          className={`px-4 py-2 font-medium text-lg rounded-md ${
+          className={`px-4 py-2 font-medium text-lg rounded-xl ${
             activeTab === "signup" ? "bg-teal-600 text-white" : "bg-gray-200"
           }`}
         >
@@ -82,7 +82,7 @@ const ViewProfile = () => {
         </button>
         <button
           onClick={() => setActiveTab("details")}
-          className={`px-4 py-2 font-medium text-lg rounded-md ${
+          className={`px-4 py-2 font-medium text-lg rounded-xl ${
             activeTab === "details" ? "bg-teal-600 text-white" : "bg-gray-200"
           }`}
         >
@@ -199,7 +199,7 @@ const ViewProfile = () => {
                 className="mt-1 w-full"
               />
             </div>
-            <Button type="submit" className="bg-teal-600 text-white px-4 py-2">
+            <Button type="submit" className="bg-teal-600 text-white px-3 py-4 h-12 rounded-xl">
               Update Settings
             </Button>
           </form>
