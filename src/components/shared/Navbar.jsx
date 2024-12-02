@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,7 +7,14 @@ const Navbar = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
   const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false); // State for Contact Us dropdown
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const navigate = useNavigate();
+
+  // Check if the user is logged in when the component mounts
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    setIsLoggedIn(!!authToken); // Set isLoggedIn to true if authToken exists
+  }, []);
 
   // Function to toggle the main menu
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -36,6 +43,7 @@ const Navbar = () => {
     // Clear session data (localStorage, cookies, or token)
     localStorage.removeItem("authToken");
     setIsLogoutPopupOpen(false); // Close the popup
+    setIsLoggedIn(false); // Update login state
     navigate("/"); // Redirect to home page
   };
 
@@ -170,40 +178,40 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Profile Dropdown */}
-        <div className="relative z-40 navbar-dropdown">
-          <button
-            className="text-xl text-gray-700 hover:text-[#4B6708]"
-            onClick={toggleProfileDropdown}
-          >
-            Profile
-          </button>
-          <div
-            className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
-              isProfileDropdownOpen ? "block" : "hidden"
-            }`}
-          >
-            <Link
-              to="/view-profile"
-              className="block text-teal-300 hover:text-[#4B6708]"
-            >
-              View Profile
-            </Link>
+        {/* Profile Dropdown (Only visible when logged in) */}
+        {isLoggedIn && (
+          <div className="relative z-40 navbar-dropdown">
             <button
-              className="block text-red-500"
-              onClick={() => setIsLogoutPopupOpen(true)} // Open the logout confirmation popup
+              className="text-xl text-gray-700 hover:text-[#4B6708]"
+              onClick={toggleProfileDropdown}
             >
-              Logout
+              Profile
             </button>
+            <div
+              className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
+                isProfileDropdownOpen ? "block" : "hidden"
+              }`}
+            >
+              <Link
+                to="/view-profile"
+                className="block text-teal-300 hover:text-[#4B6708]"
+              >
+                View Profile
+              </Link>
+              <button
+                className="block text-red-500"
+                onClick={() => setIsLogoutPopupOpen(true)} // Open the logout confirmation popup
+              >
+                Logout
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
         <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container">
-          {" "}
-          {/* Added z-50 */}
           <div className="w-full max-w-md bg-[#D16F6F] p-8 shadow-lg rounded-lg">
             <h2 className="text-2xl font-bold text-center mb-6">Logging Out</h2>
             <p className="text-center text-lg mb-6">
@@ -217,8 +225,8 @@ const Navbar = () => {
                 Yes, Log out
               </button>
               <button
-                onClick={() => setIsLogoutPopupOpen(false)} // Close the popup
-                className="w-32 bg-gray-300 text-black py-2 rounded-lg hover:bg-gray-400"
+                onClick={() => setIsLogoutPopupOpen(false)}
+                className="w-32 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
               >
                 Cancel
               </button>

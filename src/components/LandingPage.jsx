@@ -54,7 +54,7 @@ const LandingPage = () => {
             {/* Health Records Card */}
             <Link
               to="/dashboard"
-              className="bg-teal-50 p-10 rounded-3xl h-[350px] w-[350px] shadow-lg hover:shadow-2xl transition-all text-center"
+              className="bg-teal-50 p-10 rounded-3xl h-[300px] w-[450px] shadow-lg hover:shadow-2xl transition-all text-center"
             >
               <h3 className="text-3xl font-semibold text-teal-600 mb-4">
                 Health Records
@@ -71,7 +71,7 @@ const LandingPage = () => {
             {/* Prescription Tracking Card */}
             <Link
               to="/prescription-tracking"
-              className="bg-teal-50 p-10 rounded-3xl h-[350px] w-[350px] shadow-lg hover:shadow-2xl transition-all text-center"
+              className="bg-teal-50 p-10 rounded-3xl h-[300px] w-[450px] shadow-lg hover:shadow-2xl transition-all text-center"
             >
               <h3 className="text-3xl font-semibold text-teal-600 mb-4">
                 Prescription Tracking
@@ -86,7 +86,7 @@ const LandingPage = () => {
             {/* Doctor Access Card */}
             <Link
               to="/doctor-access"
-              className="bg-teal-50 p-10 rounded-3xl h-[350px] w-[350px] shadow-lg hover:shadow-2xl transition-all text-center"
+              className="bg-teal-50 p-10 rounded-3xl h-[300px] w-[450px] shadow-lg hover:shadow-2xl transition-all text-center"
             >
               <h3 className="text-3xl font-semibold text-teal-600 mb-4">
                 Doctor Access
@@ -102,7 +102,7 @@ const LandingPage = () => {
             {/* Health Support Card */}
             <Link
               to="/health-support"
-              className="bg-teal-50 p-10 h-[350px] w-[350px] rounded-3xl shadow-lg hover:shadow-2xl transition-all text-center"
+              className="bg-teal-50 p-10 h-[300px] w-[450px] rounded-3xl shadow-lg hover:shadow-2xl transition-all text-center"
             >
               <h3 className="text-3xl font-semibold text-teal-600 mb-4">
                 Health Support
