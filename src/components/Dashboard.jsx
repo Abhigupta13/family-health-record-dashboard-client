@@ -12,27 +12,31 @@ import { FaTrash } from "react-icons/fa"; // Import trash icon from React Icons
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [newMember, setNewMember] = useState({
     name: "",
     age: "",
     gender: "",
     condition: "",
+    relation: "",
     image: "",
   });
 
   // Retrieve family members from localStorage or use an empty array
   const [familyMembers, setFamilyMembers] = useState(() => {
     const savedMembers = localStorage.getItem("familyMembers");
-    return savedMembers ? JSON.parse(savedMembers) : [
-      {
-        id: 1,
-        name: "John Doe",
-        condition: "Hypertension",
-        lastVisit: "10th Nov 2024",
-        image:
-          "https://health-e.in/wp-content/uploads/2023/12/healthcare-concept-with-futuristic-design-graphics-medical-treatment-icons.webp",
-      },
-    ];
+    return savedMembers
+      ? JSON.parse(savedMembers)
+      : [
+          {
+            id: 1,
+            name: "John Doe",
+            condition: "Hypertension",
+            lastVisit: "10th Nov 2024",
+            image:
+              "https://health-e.in/wp-content/uploads/2023/12/healthcare-concept-with-futuristic-design-graphics-medical-treatment-icons.webp",
+          },
+        ];
   });
 
   // Update localStorage whenever familyMembers change
@@ -50,6 +54,17 @@ const Dashboard = () => {
     setNewMember({ ...newMember, [name]: value });
   };
 
+  // Handle modal visibility for showing details
+  const handleShowDetails = (member) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  }
+
   // Handle file input change (image upload)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -65,17 +80,31 @@ const Dashboard = () => {
   // Handle form submission to add a new family member
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    // Validate form inputs
+    if (
+      !newMember.name ||
+      !newMember.age ||
+      !newMember.condition ||
+      !newMember.gender
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
     const newId = familyMembers.length + 1;
     setFamilyMembers([
       ...familyMembers,
-      { ...newMember, id: newId, lastVisit: "Just Added" },
+      { ...newMember, id: newId, lastVisit: "03/12/2024" },
     ]);
     handleModalClose(); // Close the modal after submitting
   };
 
   // Handle member deletion
   const handleDeleteMember = (id) => {
-    const updatedFamilyMembers = familyMembers.filter((member) => member.id !== id);
+    const updatedFamilyMembers = familyMembers.filter(
+      (member) => member.id !== id
+    );
     setFamilyMembers(updatedFamilyMembers);
   };
 
@@ -101,35 +130,60 @@ const Dashboard = () => {
               Add Members
             </Button>
           </div>
+
           <Carousel className="relative w-full max-w-6xl mx-auto mt-5">
             {/* Carousel Content */}
             <CarouselContent className="items-center gap-4">
               {familyMembers.map((member) => (
-                <Card
-                  key={member.id}
-                  className="w-80 h-96 bg-cover bg-center shadow-lg rounded-2xl flex-shrink-0 relative"
-                  style={{ backgroundImage: `url(${member.image})` }}
-                >
-                  <div className="absolute inset-0 bg-opacity-30 rounded-lg"></div>
-                  {/* Delete Icon */}
-                  <button
-                    onClick={() => handleDeleteMember(member.id)}
-                    className="absolute bottom-6 right-6 bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
+                <div className="flex" key={member.id}>
+                  <Card
+                    className="w-80 h-96 bg-cover bg-center shadow-lg rounded-2xl flex-shrink-0 relative"
+                    style={{ backgroundImage: `url(${member.image})` }}
                   >
-                    <FaTrash />
-                  </button>
-                  <div className="absolute bottom-4 left-4 text-white z-10">
-                    <h3 className="text-2xl text-[#B6DC70] font-semibold">
-                      {member.name}
-                    </h3>
-                    <p className="text-teal-300">
-                      Condition: {member.condition}
-                    </p>
-                    <p className="text-gray-300">
-                      Last Visit: {member.lastVisit}
-                    </p>
-                  </div>
-                </Card>
+                    <div className="absolute inset-0 bg-opacity-30 rounded-lg"></div>
+
+                    {/* Stack Image and Text Vertically */}
+                    <div className="absolute inset-0 flex flex-col">
+                      {/* Image Section - Top Half */}
+                      <div
+                        className="w-full h-1/2 bg-cover bg-center rounded-t-2xl"
+                        style={{
+                          backgroundImage: `url(${member.image})`,
+                          backgroundPosition: "center 20%",
+                        }}
+                      ></div>
+
+                      {/* Text Section - Bottom Half */}
+                      <div className="w-full h-1/2 bg-gray-300 p-10 rounded-b-2xl">
+                        <h3 className="text-2xl text-[#0e100b] font-semibold">
+                          {member.name}
+                        </h3>
+                        <p className="text-[#2d218d]">
+                          Condition: {member.condition}
+                        </p>
+                        <p className="text-[#d14062]">
+                          Last Visit: {member.lastVisit}
+                        </p>
+
+                        {/* Delete Icon */}
+                        <button
+                          onClick={() => handleDeleteMember(member.id)}
+                          className="absolute bottom-4 right-4 bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+
+                        {/* Button to view full details */}
+                        <Button
+                          onClick={() => handleShowDetails(member)}
+                          className="mt-4 bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               ))}
             </CarouselContent>
 
@@ -139,6 +193,7 @@ const Dashboard = () => {
           </Carousel>
         </div>
       </section>
+
       <div className="h-[2px] w-2/3 items-center justify-center mx-auto bg-[#4499E8]"></div>
 
       {/* Graphs/Charts */}
@@ -150,7 +205,6 @@ const Dashboard = () => {
           <p className="text-gray-500">
             Example Graph: Blood Pressure Tracking
           </p>
-          {/* Replace with actual graph component */}
           <div className="h-64 mt-3 w- rounded-md flex items-center justify-center">
             <img
               src="https://media.istockphoto.com/id/900699224/photo/atrial-flutter-with-variable-conduction-blood-pressure-pulse-oxymeter-and-vital-signs-on.jpg?s=612x612&w=0&k=20&c=CEzbVnMNuFSibslEdoLWmuwFdMwk9NrrS4KRbs526mI="
@@ -198,11 +252,11 @@ const Dashboard = () => {
                   name="name"
                   value={newMember.name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="Enter name"
                   required
                 />
               </div>
-
               <div className="mb-4">
                 <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
                   Age
@@ -212,11 +266,11 @@ const Dashboard = () => {
                   name="age"
                   value={newMember.age}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="Enter age"
                   required
                 />
               </div>
-
               <div className="mb-4">
                 <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
                   Gender
@@ -225,63 +279,76 @@ const Dashboard = () => {
                   name="gender"
                   value={newMember.gender}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-md"
                   required
                 >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Female">Other</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
-
               <div className="mb-4">
                 <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Condition
+                  Health Condition
                 </label>
                 <input
                   type="text"
                   name="condition"
                   value={newMember.condition}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="Enter condition"
                   required
                 />
               </div>
-
               <div className="mb-4">
                 <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Select Image
+                  Relation
+                </label>
+                <input
+                  type="text"
+                  name="relation"
+                  value={newMember.relation}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="Enter relation (e.g., Father)"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
+                  Your image
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  required
+                  className="w-full p-2 border border-gray-300 rounded-md"
                 />
-                {newMember.image && (
-                  <div className="mt-2">
+                {
+                  newMember.image && (
+                    <div className="mt-2">
                     <img
                       src={newMember.image}
                       alt="Preview"
                       className="w-20 h-20 object-cover rounded-lg"
                     />
-                  </div>
-                )}
+                    </div>
+                  )
+                }
               </div>
-
+              
               <div className="flex justify-between">
                 <Button
                   type="button"
                   onClick={handleModalClose}
-                  className="bg-gray-500 rounded-xl hover:bg-gray-600 text-white"
+                  className="mr-4 text-red-600 bg-gray-400 hover:bg-red-400 rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-teal-600 rounded-xl hover:bg-teal-700 text-white"
+                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
                 >
                   Add Member
                 </Button>
@@ -290,6 +357,44 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Modal for Member Details */}
+      {isModalOpen && selectedMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold text-teal-600 mb-4">
+              {selectedMember.name}'s Details
+            </h2>
+            <div className="mb-4">
+              <strong>Age: </strong>{selectedMember.age}
+            </div>
+            <div className="mb-4">
+              <strong>Gender: </strong>{selectedMember.gender}
+            </div>
+            <div className="mb-4">
+              <strong>Relation: </strong>{selectedMember.relation}
+            </div>
+            <div className="mb-4">
+              <strong>Condition: </strong>{selectedMember.condition}
+            </div>
+            <div className="mb-4">
+              <strong>Last Visit: </strong>{selectedMember.lastVisit}
+            </div>
+            <div className="mb-4">
+              <img src={selectedMember.image} alt={selectedMember.name} className="w-full h-48 object-cover rounded-lg" />
+            </div>
+
+            {/* Close Modal Button */}
+            <Button
+              onClick={handleCloseModal}
+              className="w-full bg-red-600 text-white hover:bg-red-700 rounded-xl py-2 px-4"
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
