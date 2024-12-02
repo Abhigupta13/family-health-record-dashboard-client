@@ -122,10 +122,10 @@ const Footer = () => {
 
           {/* Terms & Privacy Links */}
           <div className="flex space-x-6">
-            <a href="#" className="text-sm hover:underline">
+            <a href="/terms" className="text-sm hover:underline">
               Terms & Conditions
             </a>
-            <a href="#" className="text-sm hover:underline">
+            <a href="/terms" className="text-sm hover:underline">
               Privacy Policy
             </a>
           </div>

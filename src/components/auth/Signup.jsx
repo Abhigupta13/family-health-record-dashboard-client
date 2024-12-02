@@ -2,11 +2,17 @@ import React from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Signup submitted!");
+
+    navigate("/login")
   };
 
   return (
@@ -93,7 +99,7 @@ const Signup = () => {
 
           {/* Submit Button */}
           <div>
-            <Button type="submit" className="w-full bg-teal-600 text-white py-2">
+            <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-xl">
               Sign Up
             </Button>
           </div>

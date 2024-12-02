@@ -84,7 +84,7 @@ const Login = () => {
 
           {/* Submit Button */}
           <div>
-            <Button type="submit" className="w-full bg-teal-600 text-white py-2">
+            <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-xl">
               Login
             </Button>
           </div>

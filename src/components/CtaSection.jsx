@@ -1,7 +1,9 @@
 import React from "react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const CtaSection = () => {
+  const navigate = useNavigate();
   return (
     <div 
     className="bg-gray-100 w-full py-10 text-center min-h-[500px]"
