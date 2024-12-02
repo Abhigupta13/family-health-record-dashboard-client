@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Avatar, AvatarImage } from "../ui/avatar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -185,7 +186,12 @@ const Navbar = () => {
               className="text-xl text-gray-700 hover:text-[#4B6708]"
               onClick={toggleProfileDropdown}
             >
-              Profile
+              <Avatar className="cursor-pointer">
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                  />
+                </Avatar>
             </button>
             <div
               className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
