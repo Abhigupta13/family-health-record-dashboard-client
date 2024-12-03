@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaPhoneAlt, FaUpload } from "react-icons/fa"; // Phone and Upload icons from React Icons
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 
 const EmergencyContact = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
