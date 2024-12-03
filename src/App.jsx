@@ -20,9 +20,9 @@ import CtaSection from './components/CtaSection';
 import Testimonial from './components/Testimonial';
 import HealthSupport from './components/HealthSupport';
 import ContactUs from './components/ContactUs';
-import EmergencyCall from './components/shared/EmergencyCall';
 import ChatWithUs from './components/ChatWithUs';
 import HealthInsight from './components/HealthInsight';
+import EmergencyContact from './components/EmergencyCall';
 
 const appRouter = createBrowserRouter([
   {
@@ -50,7 +50,7 @@ const appRouter = createBrowserRouter([
     element: <TermsCondition/>
   },
   {
-    path: "/view-profile",
+    path: "/profile/view-profile",
     element: <ViewProfile/>
   },
   {
@@ -95,7 +95,7 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/emergency-call",
-    element: <EmergencyCall/>
+    element: <EmergencyContact/>
   },
   {
     path: "/chat-with-us",

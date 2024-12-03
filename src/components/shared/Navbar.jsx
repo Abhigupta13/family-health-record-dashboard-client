@@ -199,8 +199,8 @@ const Navbar = () => {
               }`}
             >
               <Link
-                to="/view-profile"
-                className="block text-teal-300 hover:text-[#1569B8]"
+                to="/profile/view-profile"
+                className="block text-teal-300 hover:text-[#4B6708]"
               >
                 View Profile
               </Link>

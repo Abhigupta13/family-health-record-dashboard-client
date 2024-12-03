@@ -5,20 +5,21 @@ import { Input } from "../ui/input";
 import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
-
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Signup submitted!");
 
-    navigate("/login")
+    navigate("/login");
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Create Your Account
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
           <div className="text-left">
@@ -36,7 +37,10 @@ const Signup = () => {
 
           {/* Email Field */}
           <div className="text-left">
-            <label htmlFor="email" className="text-md font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="text-md font-medium text-gray-700"
+            >
               Email
             </label>
             <Input
@@ -50,7 +54,10 @@ const Signup = () => {
 
           {/* Password Field */}
           <div className="text-left">
-            <label htmlFor="password" className="text-md font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="text-md font-medium text-gray-700"
+            >
               Password
             </label>
             <Input
@@ -64,7 +71,10 @@ const Signup = () => {
 
           {/* Confirm Password Field */}
           <div className="text-left">
-            <Label htmlFor="confirmPassword" className="text-md font-medium text-gray-700">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-md font-medium text-gray-700"
+            >
               Confirm Password
             </Label>
             <Input
@@ -79,15 +89,15 @@ const Signup = () => {
           {/* Terms and Conditions */}
           <div className="flex items-center">
             {/* Checkbox with custom blue background */}
-            <input
-              id="terms"
-              type="checkbox"
-              className="peer hidden"
+            <input 
+              id="terms" 
+              type="checkbox" 
+              className="peer hidden" 
+              required
             />
-            <div className="w-5 h-5 bg-white border rounded-full peer-checked:bg-blue-700 flex-shrink-0"></div>
+            <div className="w-4 h-4 bg-white border rounded-full peer-checked:bg-teal-500 flex-shrink-0 cursor-pointer"></div>
             <Label
               htmlFor="terms"
-              type="radio"
               className="ml-2 text-sm text-gray-600 cursor-pointer"
             >
               I agree to the{" "}
@@ -99,7 +109,10 @@ const Signup = () => {
 
           {/* Submit Button */}
           <div>
-            <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-xl">
+            <Button
+              type="submit"
+              className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-xl"
+            >
               Sign Up
             </Button>
           </div>
