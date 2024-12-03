@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -8,11 +9,11 @@ import {
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import Navbar from "./shared/Navbar";
-import { FaTrash } from "react-icons/fa"; // Import trash icon from React Icons
+import { FaTrash } from "react-icons/fa";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState(null);
   const [newMember, setNewMember] = useState({
     name: "",
     age: "",
@@ -22,7 +23,6 @@ const Dashboard = () => {
     image: "",
   });
 
-  // Retrieve family members from localStorage or use an empty array
   const [familyMembers, setFamilyMembers] = useState(() => {
     const savedMembers = localStorage.getItem("familyMembers");
     return savedMembers
@@ -39,33 +39,28 @@ const Dashboard = () => {
         ];
   });
 
-  // Update localStorage whenever familyMembers change
   useEffect(() => {
     localStorage.setItem("familyMembers", JSON.stringify(familyMembers));
   }, [familyMembers]);
 
-  // Handle modal visibility
   const handleModalOpen = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setNewMember({
+      name: "",
+      age: "",
+      gender: "",
+      condition: "",
+      relation: "",
+      image: "",
+    });
+  };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewMember({ ...newMember, [name]: value });
   };
 
-  // Handle modal visibility for showing details
-  const handleShowDetails = (member) => {
-    setSelectedMember(member);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedMember(null);
-  }
-
-  // Handle file input change (image upload)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -77,17 +72,9 @@ const Dashboard = () => {
     }
   };
 
-  // Handle form submission to add a new family member
   const handleFormSubmit = (e) => {
     e.preventDefault();
-
-    // Validate form inputs
-    if (
-      !newMember.name ||
-      !newMember.age ||
-      !newMember.condition ||
-      !newMember.gender
-    ) {
+    if (!newMember.name || !newMember.age || !newMember.condition || !newMember.gender) {
       alert("Please fill in all fields.");
       return;
     }
@@ -97,15 +84,18 @@ const Dashboard = () => {
       ...familyMembers,
       { ...newMember, id: newId, lastVisit: "03/12/2024" },
     ]);
-    handleModalClose(); // Close the modal after submitting
+    handleModalClose();
   };
 
-  // Handle member deletion
   const handleDeleteMember = (id) => {
     const updatedFamilyMembers = familyMembers.filter(
       (member) => member.id !== id
     );
     setFamilyMembers(updatedFamilyMembers);
+  };
+
+  const handleShowDetails = (member) => {
+    navigate(`/family-member/${member.id}/details`);
   };
 
   return (
@@ -114,14 +104,8 @@ const Dashboard = () => {
       <h1 className="mt-6 text-4xl font-bold mb-4 text-[#4499E8]">
         Family Health Dashboard
       </h1>
-
-      {/* Family Health Overview */}
       <section className="mb-8">
-        <h2 className="text-2xl text-gray-500 font-semibold mb-4">
-          Family Health Overview
-        </h2>
         <div className="relative">
-          {/* Quick Add Button */}
           <div className="flex-shrink-0 flex items-center mt-8 justify-center">
             <Button
               className="w-64 h-16 bg-teal-600 text-white text-lg rounded-2xl hover:bg-teal-700"
@@ -130,123 +114,56 @@ const Dashboard = () => {
               Add Members
             </Button>
           </div>
-
           <Carousel className="relative w-full max-w-6xl mx-auto mt-5">
-            {/* Carousel Content */}
             <CarouselContent className="items-center gap-4">
               {familyMembers.map((member) => (
                 <div className="flex" key={member.id}>
                   <Card
-                    className="w-80 h-96 bg-cover bg-center shadow-lg rounded-2xl flex-shrink-0 relative"
+                    className="w-80 h-96 bg-cover bg-center shadow-lg rounded-2xl flex-shrink-0 relative overflow-hidden group"
                     style={{ backgroundImage: `url(${member.image})` }}
                   >
-                    <div className="absolute inset-0 bg-opacity-30 rounded-lg"></div>
-
-                    {/* Stack Image and Text Vertically */}
-                    <div className="absolute inset-0 flex flex-col">
-                      {/* Image Section - Top Half */}
-                      <div
-                        className="w-full h-1/2 bg-cover bg-center rounded-t-2xl"
-                        style={{
-                          backgroundImage: `url(${member.image})`,
-                          backgroundPosition: "center 20%",
-                        }}
-                      ></div>
-
-                      {/* Text Section - Bottom Half */}
-                      <div className="w-full h-1/2 bg-gray-300 p-10 rounded-b-2xl">
-                        <h3 className="text-2xl text-[#0e100b] font-semibold">
-                          {member.name}
-                        </h3>
-                        <p className="text-[#2d218d]">
-                          Condition: {member.condition}
-                        </p>
-                        <p className="text-[#d14062]">
-                          Last Visit: {member.lastVisit}
-                        </p>
-
-                        {/* Delete Icon */}
-                        <button
-                          onClick={() => handleDeleteMember(member.id)}
-                          className="absolute bottom-4 right-4 bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-
-                        {/* Button to view full details */}
-                        <Button
-                          onClick={() => handleShowDetails(member)}
-                          className="mt-4 bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
-                        >
-                          View Details
-                        </Button>
-                      </div>
+                    <div
+                      className="absolute top-0 left-0 w-full h-4/5 bg-cover bg-center"
+                      style={{
+                        backgroundImage: `url(${member.image})`,
+                        backgroundPosition: "center",
+                      }}
+                    ></div>
+                    <div className="absolute bottom-0 w-full h-1/5 bg-gray-300 p-4 rounded-b-2xl flex flex-col justify-center items-start">
+                      <h3 className="text-lg text-[#0e100b] font-semibold">{member.name}</h3>
+                      <p className="text-sm text-[#2d218d]">Condition: {member.condition}</p>
+                      <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit}</p>
                     </div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <Button
+                        onClick={() => handleShowDetails(member)}
+                        className="bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteMember(member.id)}
+                      className="absolute top-4 right-4 bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
+                    >
+                      <FaTrash />
+                    </button>
                   </Card>
                 </div>
               ))}
             </CarouselContent>
-
-            {/* Carousel Navigation */}
             <CarouselPrevious className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 text-[#3884cb]" />
             <CarouselNext className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 text-[#307bc1]" />
           </Carousel>
         </div>
       </section>
-
-      <div className="h-[2px] w-2/3 items-center justify-center mx-auto bg-[#4499E8]"></div>
-
-      {/* Graphs/Charts */}
-      <section className="mb-8 mt-10">
-        <h2 className="text-2xl font-semibold mb-4 text-[#4499E8]">
-          Health Trends
-        </h2>
-        <div className="bg-white shadow-md p-4 rounded-lg">
-          <p className="text-gray-500">
-            Example Graph: Blood Pressure Tracking
-          </p>
-          <div className="h-64 mt-3 w- rounded-md flex items-center justify-center">
-            <img
-              src="https://media.istockphoto.com/id/900699224/photo/atrial-flutter-with-variable-conduction-blood-pressure-pulse-oxymeter-and-vital-signs-on.jpg?s=612x612&w=0&k=20&c=CEzbVnMNuFSibslEdoLWmuwFdMwk9NrrS4KRbs526mI="
-              alt="Blood Pressure Tracking"
-              className="object-contain max-h-full max-w-full"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Health Notifications */}
-      <section>
-        <h2 className="text-2xl font-semibold mb-4 text-[#4499E8]">
-          Health Notifications
-        </h2>
-        <div className="bg-white shadow-md p-4 rounded-lg">
-          <ul className="list-disc list-inside">
-            <li className="mb-2">
-              Reminder: John's hypertension medication at 9 AM
-            </li>
-            <li className="mb-2">
-              Upcoming Appointment: Jane's diabetes review on 30th Nov
-            </li>
-            <li className="mb-2">
-              Prescription Update: New dosage for John's blood pressure medicine
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Modal for Adding Member */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-bold text-teal-600 mb-4">
-              Add New Member
-            </h2>
+            <h2 className="text-2xl font-bold text-teal-600 mb-4">Add New Member</h2>
             <form onSubmit={handleFormSubmit}>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Full Name
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Full Name</label>
                 <input
                   type="text"
                   name="name"
@@ -258,9 +175,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Age
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Age</label>
                 <input
                   type="number"
                   name="age"
@@ -272,9 +187,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Gender
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Gender</label>
                 <select
                   name="gender"
                   value={newMember.gender}
@@ -289,9 +202,7 @@ const Dashboard = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Health Condition
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Health Condition</label>
                 <input
                   type="text"
                   name="condition"
@@ -303,9 +214,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Relation
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Relation</label>
                 <input
                   type="text"
                   name="relation"
@@ -316,28 +225,23 @@ const Dashboard = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">
-                  Your image
-                </label>
+                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Your image</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
                 />
-                {
-                  newMember.image && (
-                    <div className="mt-2">
+                {newMember.image && (
+                  <div className="mt-2">
                     <img
                       src={newMember.image}
                       alt="Preview"
                       className="w-20 h-20 object-cover rounded-lg"
                     />
-                    </div>
-                  )
-                }
+                  </div>
+                )}
               </div>
-              
               <div className="flex justify-between">
                 <Button
                   type="button"
@@ -357,44 +261,6 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-
-      {/* Modal for Member Details */}
-      {isModalOpen && selectedMember && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-bold text-teal-600 mb-4">
-              {selectedMember.name}'s Details
-            </h2>
-            <div className="mb-4">
-              <strong>Age: </strong>{selectedMember.age}
-            </div>
-            <div className="mb-4">
-              <strong>Gender: </strong>{selectedMember.gender}
-            </div>
-            <div className="mb-4">
-              <strong>Relation: </strong>{selectedMember.relation}
-            </div>
-            <div className="mb-4">
-              <strong>Condition: </strong>{selectedMember.condition}
-            </div>
-            <div className="mb-4">
-              <strong>Last Visit: </strong>{selectedMember.lastVisit}
-            </div>
-            <div className="mb-4">
-              <img src={selectedMember.image} alt={selectedMember.name} className="w-full h-48 object-cover rounded-lg" />
-            </div>
-
-            {/* Close Modal Button */}
-            <Button
-              onClick={handleCloseModal}
-              className="w-full bg-red-600 text-white hover:bg-red-700 rounded-xl py-2 px-4"
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };

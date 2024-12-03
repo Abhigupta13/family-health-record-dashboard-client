@@ -100,13 +100,13 @@ const Navbar = () => {
       >
         <Link
           to="/"
-          className="block md:inline text-xl text-gray-700 hover:text-[#4B6708]"
+          className="block md:inline text-xl text-gray-700 hover:text-[#1569B8]"
         >
           Home
         </Link>
         <Link
           to="/dashboard"
-          className="block md:inline text-xl text-gray-700 hover:text-[#4B6708]"
+          className="block md:inline text-xl text-gray-700 hover:text-[#3a54ba]"
         >
           Dashboard
         </Link>
@@ -114,7 +114,7 @@ const Navbar = () => {
         {/* Features Dropdown */}
         <div className="relative z-40 navbar-dropdown">
           <button
-            className="text-xl text-gray-700 hover:text-[#4B6708]"
+            className="text-xl text-gray-700 hover:text-[#1569B8]"
             onClick={toggleFeaturesDropdown}
           >
             Features
@@ -148,7 +148,7 @@ const Navbar = () => {
         {/* Contact Us Dropdown */}
         <div className="relative z-40 navbar-dropdown">
           <button
-            className="text-xl text-gray-700 hover:text-[#4B6708]"
+            className="text-xl text-gray-700 hover:text-[#1569B8]"
             onClick={toggleContactDropdown}
           >
             Contact Us
@@ -183,7 +183,7 @@ const Navbar = () => {
         {isLoggedIn && (
           <div className="relative z-40 navbar-dropdown">
             <button
-              className="text-xl text-gray-700 hover:text-[#4B6708]"
+              className="text-xl text-gray-700 hover:text-[#1569B8]"
               onClick={toggleProfileDropdown}
             >
               <Avatar className="cursor-pointer">
@@ -217,29 +217,42 @@ const Navbar = () => {
 
       {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
-        <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container">
-          <div className="w-full max-w-md bg-[#D16F6F] p-8 shadow-lg rounded-lg">
-            <h2 className="text-2xl font-bold text-center mb-6">Logging Out</h2>
-            <p className="text-center text-lg mb-6">
-              Are you sure you want to log out?
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleLogout}
-                className="w-32 bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700"
-              >
-                Yes, Log out
-              </button>
-              <button
-                onClick={() => setIsLogoutPopupOpen(false)}
-                className="w-32 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div
+    className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container"
+    aria-labelledby="logout-confirmation-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div className="w-full max-w-md bg-[#1a6d60] p-8 shadow-lg rounded-2xl"> {/* Improved container rounding */}
+      <h2
+        id="logout-confirmation-title"
+        className="text-2xl font-bold text-center mb-6 text-white"
+      >
+        Logging Out
+      </h2>
+      <p className="text-center text-lg mb-6 text-white">
+        Are you sure you want to log out?
+      </p>
+      <div className="flex justify-center space-x-4">
+        <button
+          onClick={handleLogout}
+          className="w-32 bg-teal-900 text-white py-2 px-4 rounded-full hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all duration-200"
+          type="button" // Explicit button type
+        >
+          Yes, Log out
+        </button>
+        <button
+          onClick={() => setIsLogoutPopupOpen(false)}
+          className="w-32 bg-gray-500 text-white py-2 px-4 rounded-full hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 focus:outline-none transition-all duration-200"
+          type="button" // Explicit button type
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </nav>
   );
 };
