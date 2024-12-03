@@ -23,6 +23,7 @@ import ContactUs from './components/ContactUs';
 import ChatWithUs from './components/ChatWithUs';
 import HealthInsight from './components/HealthInsight';
 import EmergencyContact from './components/EmergencyCall';
+import MemberDetails from './components/ui/viewDetailsPage';
 
 const appRouter = createBrowserRouter([
   {
@@ -104,6 +105,10 @@ const appRouter = createBrowserRouter([
   {
     path: "/health-insight",
     element: <HealthInsight/>
+  },
+  {
+    path: "/family-member/:id/details",
+    element: <MemberDetails/>
   },
 ]);
 
