@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaPhoneAlt, FaUpload } from "react-icons/fa"; // Phone and Upload icons from React Icons
 import { Button } from "./ui/button";
+import Navbar from "./shared/Navbar";
 
 const EmergencyContact = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -40,6 +41,9 @@ const EmergencyContact = () => {
   const handleFormToggle = () => setIsFormVisible(!isFormVisible);
 
   return (
+    <>
+    
+    
     <div className="text-center mt-6">
       <h2 className="text-2xl font-semibold text-[#4499E8] mb-4">Emergency Call</h2>
 
@@ -135,6 +139,7 @@ const EmergencyContact = () => {
         Please fill out the details for the emergency verification before calling. If the patient is unconscious or unable to provide details, the call can still be made directly.
       </p>
     </div>
+    </>
   );
 };
 

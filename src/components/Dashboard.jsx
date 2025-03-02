@@ -100,7 +100,7 @@ const Dashboard = () => {
 
   return (
     <div className="w-full md:basis-1/2 lg:basis-1/3 text-center">
-      <Navbar />
+      
       <h1 className="mt-6 text-4xl font-bold mb-4 text-[#4499E8]">
         Family Health Dashboard
       </h1>

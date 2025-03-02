@@ -7,57 +7,51 @@ const Navbar = () => {
   const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
-  const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false); // State for Contact Us dropdown
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // Check if the user is logged in when the component mounts
+  // Check login status on mount
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
-    setIsLoggedIn(!!authToken); // Set isLoggedIn to true if authToken exists
+    setIsLoggedIn(!!authToken);
   }, []);
 
-  // Function to toggle the main menu
+  // Toggle functions
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  // Function to toggle the Features dropdown
   const toggleFeaturesDropdown = () => {
     setIsFeaturesDropdownOpen(!isFeaturesDropdownOpen);
-    setIsProfileDropdownOpen(false); // Close the Profile dropdown when Features is opened
+    setIsProfileDropdownOpen(false);
+    setIsContactDropdownOpen(false);
   };
-
-  // Function to toggle the Profile dropdown
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
-    setIsFeaturesDropdownOpen(false); // Close the Features dropdown when Profile is opened
+    setIsFeaturesDropdownOpen(false);
+    setIsContactDropdownOpen(false);
   };
-
-  // Function to toggle the Contact Us dropdown
   const toggleContactDropdown = () => {
     setIsContactDropdownOpen(!isContactDropdownOpen);
-    setIsFeaturesDropdownOpen(false); // Close other dropdowns when Contact Us is opened
+    setIsFeaturesDropdownOpen(false);
     setIsProfileDropdownOpen(false);
   };
 
-  // Function to handle logout action
+  // Handle Logout
   const handleLogout = () => {
-    // Clear session data (localStorage, cookies, or token)
     localStorage.removeItem("authToken");
-    setIsLogoutPopupOpen(false); // Close the popup
-    setIsLoggedIn(false); // Update login state
-    navigate("/"); // Redirect to home page
+    setIsLogoutPopupOpen(false);
+    setIsLoggedIn(false);
+    navigate("/");
   };
 
   return (
-    <nav className="flex w-full items-center justify-between p-6 bg-white text-white shadow-lg relative">
+    <nav className="flex w-full items-center justify-between p-5 bg-gradient-to-r from-[#0b3558] to-[#1976d2] shadow-md relative">
       {/* Logo Section */}
-      <div className="text-3xl ml-4 text-[#1569B8] font-bold flex items-center space-x-2">
+      <div className="text-3xl text-white font-bold flex items-center space-x-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-10 w-10"
           viewBox="0 0 20 20"
           fill="currentColor"
-          aria-hidden="true"
         >
           <path
             fillRule="evenodd"
@@ -65,17 +59,13 @@ const Navbar = () => {
             clipRule="evenodd"
           />
         </svg>
-        <Link to="/" className="text-4xl font-bold text-[#1569B8]">
+        <Link to="/" className="text-4xl font-bold text-white">
           HealthCare
         </Link>
       </div>
 
-      {/* Hamburger Menu Icon for Small Screens */}
-      <button
-        className="block md:hidden text-white"
-        onClick={toggleMenu}
-        aria-label="Toggle navigation"
-      >
+      {/* Hamburger Menu for Small Screens */}
+      <button className="block md:hidden text-white" onClick={toggleMenu}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-8 w-8"
@@ -83,131 +73,68 @@ const Navbar = () => {
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 6h16M4 12h16m-7 6h7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
         </svg>
       </button>
 
       {/* Navigation Links */}
-      <div
-        className={`${
-          isMenuOpen ? "block" : "hidden"
-        } md:flex md:items-center space-y-4 space-x-8 md:space-y-0 mr-8 md:space-x-10`}
-      >
-        <Link
-          to="/"
-          className="block md:inline text-xl text-gray-700 hover:text-[#1569B8]"
-        >
+      <div className={`${isMenuOpen ? "block" : "hidden"} md:flex items-center space-x-6`}>
+        <Link to="/" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Home
         </Link>
-        <Link
-          to="/dashboard"
-          className="block md:inline text-xl text-gray-700 hover:text-[#3a54ba]"
-        >
+        <Link to="/dashboard" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Dashboard
         </Link>
 
         {/* Features Dropdown */}
-        <div className="relative z-40 navbar-dropdown">
-          <button
-            className="text-xl text-gray-700 hover:text-[#1569B8]"
-            onClick={toggleFeaturesDropdown}
-          >
+        <div className="relative group">
+          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={toggleFeaturesDropdown}>
             Features
           </button>
-          <div
-            className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
-              isFeaturesDropdownOpen ? "block" : "hidden"
-            }`}
-          >
-            <Link
-              to="/health-insight"
-              className="block text-white hover:text-teal-500"
-            >
+          <div className={`absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isFeaturesDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
+            <Link to="/health-insight" className="block px-4 py-2 hover:bg-gray-300">
               Health Insights
             </Link>
-            <Link
-              to="/dashboard"
-              className="block text-white hover:text-teal-500"
-            >
+            <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-300">
               Medical Records
             </Link>
-            <Link
-              to="/emergency-call"
-              className="block text-white hover:text-teal-500"
-            >
+            <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-300">
               Emergency Contacts
             </Link>
           </div>
         </div>
 
-        {/* Contact Us Dropdown */}
-        <div className="relative z-40 navbar-dropdown">
-          <button
-            className="text-xl text-gray-700 hover:text-[#1569B8]"
-            onClick={toggleContactDropdown}
-          >
+        {/* Contact Dropdown */}
+        <div className="relative group">
+          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={toggleContactDropdown}>
             Contact Us
           </button>
-          <div
-            className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
-              isContactDropdownOpen ? "block" : "hidden"
-            }`}
-          >
-            <Link
-              to="/emergency-call"
-              className="block text-white hover:text-teal-500"
-            >
+          <div className={`absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isContactDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
+            <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-300">
               Emergency Booking
             </Link>
-            <Link
-              to="/contact-us"
-              className="block text-white hover:text-teal-500"
-            >
+            <Link to="/contact-us" className="block px-4 py-2 hover:bg-gray-300">
               Contact Us
             </Link>
-            <Link
-              to="/chat-with-us"
-              className="block text-white hover:text-teal-500"
-            >
+            <Link to="/chat-with-us" className="block px-4 py-2 hover:bg-gray-300">
               Chat with us
             </Link>
           </div>
         </div>
 
-        {/* Profile Dropdown (Only visible when logged in) */}
+        {/* Profile Dropdown (Only for logged-in users) */}
         {isLoggedIn && (
-          <div className="relative z-40 navbar-dropdown">
-            <button
-              className="text-xl text-gray-700 hover:text-[#1569B8]"
-              onClick={toggleProfileDropdown}
-            >
+          <div className="relative group">
+            <button className="flex items-center text-white" onClick={toggleProfileDropdown}>
               <Avatar className="cursor-pointer">
-                  <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
-                  />
-                </Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
+              </Avatar>
             </button>
-            <div
-              className={`absolute left-0 mt-2 space-y-2 bg-teal-700 text-white p-4 rounded-md shadow-lg ${
-                isProfileDropdownOpen ? "block" : "hidden"
-              }`}
-            >
-              <Link
-                to="/profile/view-profile"
-                className="block text-teal-300 hover:text-[#4B6708]"
-              >
+            <div className={`absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isProfileDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
+              <Link to="/profile/view-profile" className="block px-4 py-2 hover:bg-gray-300">
                 View Profile
               </Link>
-              <button
-                className="block text-red-500"
-                onClick={() => setIsLogoutPopupOpen(true)} // Open the logout confirmation popup
-              >
+              <button className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-300" onClick={() => setIsLogoutPopupOpen(true)}>
                 Logout
               </button>
             </div>
@@ -217,42 +144,21 @@ const Navbar = () => {
 
       {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
-  <div
-    className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 popup-container"
-    aria-labelledby="logout-confirmation-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div className="w-full max-w-md bg-[#1a6d60] p-8 shadow-lg rounded-2xl"> {/* Improved container rounding */}
-      <h2
-        id="logout-confirmation-title"
-        className="text-2xl font-bold text-center mb-6 text-white"
-      >
-        Logging Out
-      </h2>
-      <p className="text-center text-lg mb-6 text-white">
-        Are you sure you want to log out?
-      </p>
-      <div className="flex justify-center space-x-4">
-        <button
-          onClick={handleLogout}
-          className="w-32 bg-teal-900 text-white py-2 px-4 rounded-full hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all duration-200"
-          type="button" // Explicit button type
-        >
-          Yes, Log out
-        </button>
-        <button
-          onClick={() => setIsLogoutPopupOpen(false)}
-          className="w-32 bg-gray-500 text-white py-2 px-4 rounded-full hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 focus:outline-none transition-all duration-200"
-          type="button" // Explicit button type
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Logging Out</h2>
+            <p className="mb-4">Are you sure you want to log out?</p>
+            <div className="flex justify-center space-x-4">
+              <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleLogout}>
+                Yes, Log out
+              </button>
+              <button className="bg-gray-300 px-4 py-2 rounded-md" onClick={() => setIsLogoutPopupOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

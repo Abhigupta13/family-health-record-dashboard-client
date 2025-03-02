@@ -62,7 +62,7 @@ const AuthOptions = () => {
 
   return (
     <>
-      <Navbar />
+      
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-6 sm:px-6 lg:px-8 ">
         <div className="flex flex-col md:flex-row w-full max-w-5xl max-h-5xl bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Role Selection */}

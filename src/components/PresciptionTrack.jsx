@@ -73,9 +73,9 @@ const PrescriptionTrack = () => {
 
   return (
     <div>
-      <Navbar/>
+      
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-teal-50">
-        {/* <Navbar/> */}
+        {/*  */}
         <div className="max-w-4xl w-full p-6">
           <h1 className="text-3xl font-bold text-white bg-gradient-to-r from-teal-500 to-teal-600 p-4 rounded-xl text-center mb-6">
             Prescription Tracking

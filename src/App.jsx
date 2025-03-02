@@ -1,5 +1,5 @@
 import './App.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import TermsCondition from './components/TermsCondition';
@@ -19,92 +19,36 @@ import HealthInsight from './components/HealthInsight';
 import EmergencyContact from './components/EmergencyCall';
 import MemberDetails from './components/ui/viewDetailsPage';
 import AuthOptions from './components/auth/AuthOptions'; 
-
-const appRouter = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  },
-  {
-    path: "/auth",
-    element: <AuthOptions />
-  },
-  {
-    path: "/dashboard",
-    element: <Dashboard />
-  },
-  {
-    path: "/terms",
-    element: <TermsCondition />
-  },
-  {
-    path: "/profile/view-profile",
-    element: <ViewProfile />
-  },
-  {
-    path: "/forgot-password",
-    element: <ForgotPassword />
-  },
-  {
-    path: "/logout",
-    element: <Logout />
-  },
-  {
-    path: "/prescription-tracking",
-    element: <PrescriptionTrack />
-  },
-  {
-    path: "/doctor-access",
-    element: <DoctorAccess />
-  },
-  {
-    path: "/health-support",
-    element: <HealthSupport />
-  },
-  {
-    path: "/prescription-edit",
-    element: <PrescriptionEdit />
-  },
-  {
-    path: "/ocr-section",
-    element: <OcrSection />
-  },
-  {
-    path: "/cta-section",
-    element: <CtaSection />
-  },
-  {
-    path: "/testimonial",
-    element: <Testimonial />
-  },
-  {
-    path: "/contact-us",
-    element: <ContactUs />
-  },
-  {
-    path: "/emergency-call",
-    element: <EmergencyContact />
-  },
-  {
-    path: "/chat-with-us",
-    element: <ChatWithUs />
-  },
-  {
-    path: "/health-insight",
-    element: <HealthInsight />
-  },
-  {
-    path: "/family-member/:id/details",
-    element: <MemberDetails />
-  }
-]);
+import Navbar from './components/shared/Navbar';
 
 function App() {
   return (
-    <div>
-      {/* <Navbar /> */}
-      <RouterProvider router={appRouter} />
-    </div>
+    <Router>
+      <div>
+        <Navbar/>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<AuthOptions />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/terms" element={<TermsCondition />} />
+          <Route path="/profile/view-profile" element={<ViewProfile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/prescription-tracking" element={<PrescriptionTrack />} />
+          <Route path="/doctor-access" element={<DoctorAccess />} />
+          <Route path="/health-support" element={<HealthSupport />} />
+          <Route path="/prescription-edit" element={<PrescriptionEdit />} />
+          <Route path="/ocr-section" element={<OcrSection />} />
+          <Route path="/cta-section" element={<CtaSection />} />
+          <Route path="/testimonial" element={<Testimonial />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/emergency-call" element={<EmergencyContact />} />
+          <Route path="/chat-with-us" element={<ChatWithUs />} />
+          <Route path="/health-insight" element={<HealthInsight />} />
+          <Route path="/family-member/:id/details" element={<MemberDetails />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

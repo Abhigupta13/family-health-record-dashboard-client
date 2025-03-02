@@ -29,6 +29,7 @@ const ViewProfile = () => {
     reminders: false,
     alerts: false,
   });
+  const [previewPic, setPreviewPic] = useState(null); // State for previewing the new profile picture
 
   useEffect(() => {
     setTimeout(() => {
@@ -50,7 +51,7 @@ const ViewProfile = () => {
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    setUser(updatedUser);
+    setUser({ ...updatedUser, profilePic: previewPic }); // Update user with the new profile picture
     setEditMode(false);
   };
 
@@ -63,7 +64,7 @@ const ViewProfile = () => {
 
   return (
     <>
-      <Navbar />
+      
       <div className="p-8 max-w-3xl mx-auto bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-left text-teal-600 mb-6">
           Profile
@@ -75,7 +76,7 @@ const ViewProfile = () => {
           <div className="flex flex-col items-center">
             <div className="flex items-center w-full ms-24 gap-36">
               <img
-                src={user.profilePic}
+                src={previewPic || user.profilePic} // Show preview or current profile picture
                 alt="Profile"
                 className="w-40 h-40 rounded-full border-4 border-teal-500"
               />
@@ -95,6 +96,23 @@ const ViewProfile = () => {
 
             {editMode && (
               <form onSubmit={handleUpdate} className="mt-6 w-full">
+                <div className="flex flex-col items-left mb-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setPreviewPic(reader.result); // Set the preview picture
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="right-96"
+                  />
+                </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="block text-md font-medium text-gray-600">Name</Label>
@@ -157,8 +175,7 @@ const ViewProfile = () => {
                   Save Changes
                 </Button>
               </div>
-            </form>
-            
+            </form>            
             )}
           </div>
         )}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Navbar from "./shared/Navbar";
 
 const HealthInsight = () => {
   const [topic, setTopic] = useState(""); // To hold the selected topic
@@ -125,7 +126,9 @@ const HealthInsight = () => {
   };
 
   // Render chat interface
-  return (
+  return (<>
+  
+  
     <div className="flex items-center justify-center">
       <div className="w-full max-w-lg mx-auto text-center mt-6 bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-[#4499E8] mb-4">
@@ -218,6 +221,7 @@ const HealthInsight = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
