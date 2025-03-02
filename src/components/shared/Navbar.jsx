@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage } from "../ui/avatar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
-  const [isContactDropdownOpen, setIsContactDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
 
   // Check login status on mount
   useEffect(() => {
@@ -17,22 +16,27 @@ const Navbar = () => {
     setIsLoggedIn(!!authToken);
   }, []);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Toggle functions
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleFeaturesDropdown = () => {
-    setIsFeaturesDropdownOpen(!isFeaturesDropdownOpen);
-    setIsProfileDropdownOpen(false);
-    setIsContactDropdownOpen(false);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    setOpenDropdown(null);
   };
-  const toggleProfileDropdown = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-    setIsFeaturesDropdownOpen(false);
-    setIsContactDropdownOpen(false);
-  };
-  const toggleContactDropdown = () => {
-    setIsContactDropdownOpen(!isContactDropdownOpen);
-    setIsFeaturesDropdownOpen(false);
-    setIsProfileDropdownOpen(false);
+
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdown((prev) => (prev === dropdown ? null : dropdown));
   };
 
   // Handle Logout
@@ -55,7 +59,7 @@ const Navbar = () => {
         >
           <path
             fillRule="evenodd"
-            d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm1 13.41V16h-2v-.59l-4.5-4.5V9h5V6h2v3h5v2l-4.5 4.5z"
+            d="M10 2C5.58 2 2 10s3.58 8 8 8 8-3.58-8-8-3.58-8-8-8zm1 13.41V16h-2v-.59l-4.5-4.5V9h5V6h2v3h5v2l-4.5 4.5z"
             clipRule="evenodd"
           />
         </svg>
@@ -78,7 +82,7 @@ const Navbar = () => {
       </button>
 
       {/* Navigation Links */}
-      <div className={`${isMenuOpen ? "block" : "hidden"} md:flex items-center space-x-6`}>
+      <div className={`${isMenuOpen ? "block" : "hidden"} md:flex items-center space-x-6`} ref={dropdownRef}>
         <Link to="/" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Home
         </Link>
@@ -87,57 +91,63 @@ const Navbar = () => {
         </Link>
 
         {/* Features Dropdown */}
-        <div className="relative group">
-          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={toggleFeaturesDropdown}>
+        <div className="relative">
+          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={() => toggleDropdown("features")}>
             Features
           </button>
-          <div className={`absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isFeaturesDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
-            <Link to="/health-insight" className="block px-4 py-2 hover:bg-gray-300">
-              Health Insights
-            </Link>
-            <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-300">
-              Medical Records
-            </Link>
-            <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-300">
-              Emergency Contacts
-            </Link>
-          </div>
+          {openDropdown === "features" && (
+            <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg">
+              <Link to="/health-insight" className="block px-4 py-2 hover:bg-gray-100">
+                Health Insights
+              </Link>
+              <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
+                Medical Records
+              </Link>
+              <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-100">
+                Emergency Contacts
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Contact Dropdown */}
-        <div className="relative group">
-          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={toggleContactDropdown}>
+        <div className="relative">
+          <button className="text-lg text-white hover:text-yellow-300 transition duration-300" onClick={() => toggleDropdown("contact")}>
             Contact Us
           </button>
-          <div className={`absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isContactDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
-            <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-300">
-              Emergency Booking
-            </Link>
-            <Link to="/contact-us" className="block px-4 py-2 hover:bg-gray-300">
-              Contact Us
-            </Link>
-            <Link to="/chat-with-us" className="block px-4 py-2 hover:bg-gray-300">
-              Chat with us
-            </Link>
-          </div>
+          {openDropdown === "contact" && (
+            <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg">
+              <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-100">
+                Emergency Booking
+              </Link>
+              <Link to="/contact-us" className="block px-4 py-2 hover:bg-gray-100">
+                Contact Us
+              </Link>
+              <Link to="/chat-with-us" className="block px-4 py-2 hover:bg-gray-100">
+                Chat with us
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Profile Dropdown (Only for logged-in users) */}
         {isLoggedIn && (
-          <div className="relative group">
-            <button className="flex items-center text-white" onClick={toggleProfileDropdown}>
+          <div className="relative">
+            <button className="flex items-center text-white" onClick={() => toggleDropdown("profile")}>
               <Avatar className="cursor-pointer">
                 <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
               </Avatar>
             </button>
-            <div className={`absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out ${isProfileDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 hidden"}`}>
-              <Link to="/profile/view-profile" className="block px-4 py-2 hover:bg-gray-300">
-                View Profile
-              </Link>
-              <button className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-300" onClick={() => setIsLogoutPopupOpen(true)}>
-                Logout
-              </button>
-            </div>
+            {openDropdown === "profile" && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg">
+                <Link to="/profile/view-profile" className="block px-4 py-2 hover:bg-gray-100">
+                  View Profile
+                </Link>
+                <button className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100" onClick={() => setIsLogoutPopupOpen(true)}>
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

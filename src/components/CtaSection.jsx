@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -17,10 +16,10 @@ const CtaSection = () => {
       <section>
         <h2 className="text-2xl font-bold mb-4">Join Thousands of Families</h2>
         <p className="mb-6">
-          Start managing your family's health with ease today.
+          Start managing your family&apos;s health with ease today.
         </p>
         <Button
-          onClick={() => navigate("/signup")}
+          onClick={() => navigate("/auth")}
           variant="outline"
           size="lg"
           className="rounded-xl text-teal-600 border-teal-600 hover:bg-teal-600 hover:text-white transition-colors"

@@ -1,5 +1,4 @@
-import React from 'react'
-import Navbar from './shared/Navbar'
+
 import LandingPage from './LandingPage'
 import OcrSection from './OcrSection'
 import CtaSection from './CtaSection'

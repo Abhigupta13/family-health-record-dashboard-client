@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious,
-} from "./ui/carousel";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import Navbar from "./shared/Navbar";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaPlus } from "react-icons/fa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -81,8 +74,8 @@ const Dashboard = () => {
 
     const newId = familyMembers.length + 1;
     setFamilyMembers([
-      ...familyMembers,
       { ...newMember, id: newId, lastVisit: "03/12/2024" },
+      ...familyMembers,
     ]);
     handleModalClose();
   };
@@ -99,71 +92,63 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="w-full md:basis-1/2 lg:basis-1/3 text-center">
-      
-      <h1 className="mt-6 text-4xl font-bold mb-4 text-[#4499E8]">
+    <div className="w-full text-center p-6">
+      <h1 className="mt-3 text-4xl font-bold mb-3 text-[#4499E8]">
         Family Health Dashboard
       </h1>
-      <section className="mb-8">
-        <div className="relative">
-          <div className="flex-shrink-0 flex items-center mt-8 justify-center">
-            <Button
-              className="w-64 h-16 bg-teal-600 text-white text-lg rounded-2xl hover:bg-teal-700"
-              onClick={handleModalOpen}
-            >
-              Add Members
-            </Button>
-          </div>
-          <Carousel className="relative w-full max-w-6xl mx-auto mt-5">
-            <CarouselContent className="items-center gap-4">
-              {familyMembers.map((member) => (
-                <div className="flex" key={member.id}>
-                  <Card
-                    className="w-80 h-96 bg-cover bg-center shadow-lg rounded-2xl flex-shrink-0 relative overflow-hidden group"
-                    style={{ backgroundImage: `url(${member.image})` }}
-                  >
-                    <div
-                      className="absolute top-0 left-0 w-full h-4/5 bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url(${member.image})`,
-                        backgroundPosition: "center",
-                      }}
-                    ></div>
-                    <div className="absolute bottom-0 w-full h-1/5 bg-gray-300 p-4 rounded-b-2xl flex flex-col justify-center items-start">
-                      <h3 className="text-lg text-[#0e100b] font-semibold">{member.name}</h3>
-                      <p className="text-sm text-[#2d218d]">Condition: {member.condition}</p>
-                      <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit}</p>
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Button
-                        onClick={() => handleShowDetails(member)}
-                        className="bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteMember(member.id)}
-                      className="absolute top-4 right-4 bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
-                    >
-                      <FaTrash />
-                    </button>
-                  </Card>
-                </div>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 text-[#3884cb]" />
-            <CarouselNext className="absolute top-1/2 right-2 transform -translate-y-1/2 z-10 text-[#307bc1]" />
-          </Carousel>
-        </div>
-      </section>
+
+      {/* Grid layout for family members */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        
+        {/* Add Member Card */}
+        <Card
+          className="flex flex-col items-center border-spacing-3 justify-center bg-gray-200 shadow-lg rounded-xl p-6 cursor-pointer hover:bg-gray-300 transition border-4 border-teal-600"
+          onClick={handleModalOpen}
+        >
+          <FaPlus className="text-4xl text-teal-600" />
+          <p className="mt-2 text-lg font-semibold text-gray-700">Add Member</p>
+        </Card>
+
+        {/* Family Members */}
+        {familyMembers.map((member) => (
+          <Card key={member.id} className="relative bg-white shadow-lg rounded-xl p-4">
+            <img
+              src={member.image}
+              alt={member.name}
+              className="w-full h-48 object-cover rounded-md"
+            />
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-[#0e100b]">{member.name}</h3>
+              <p className="text-sm text-[#2d218d]">Condition: {member.condition}</p>
+              <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit}</p>
+            </div>
+
+            <div className="mt-4 flex justify-between">
+              <Button
+                onClick={() => handleShowDetails(member)}
+                className="bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
+              >
+                View Details
+              </Button>
+              <button
+                onClick={() => handleDeleteMember(member.id)}
+                className="bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
+              >
+                <FaTrash />
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Modal for adding new members */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold text-teal-600 mb-4">Add New Member</h2>
             <form onSubmit={handleFormSubmit}>
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Full Name</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Full Name</label>
                 <input
                   type="text"
                   name="name"
@@ -174,8 +159,9 @@ const Dashboard = () => {
                   required
                 />
               </div>
+              
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Age</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Age</label>
                 <input
                   type="number"
                   name="age"
@@ -186,8 +172,9 @@ const Dashboard = () => {
                   required
                 />
               </div>
+
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Gender</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Gender</label>
                 <select
                   name="gender"
                   value={newMember.gender}
@@ -201,8 +188,9 @@ const Dashboard = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
+
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Health Condition</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Health Condition</label>
                 <input
                   type="text"
                   name="condition"
@@ -213,35 +201,17 @@ const Dashboard = () => {
                   required
                 />
               </div>
+
               <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Relation</label>
-                <input
-                  type="text"
-                  name="relation"
-                  value={newMember.relation}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="Enter relation (e.g., Father)"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm text-left font-semibold text-gray-700 mb-2">Your image</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Upload Image</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
                 />
-                {newMember.image && (
-                  <div className="mt-2">
-                    <img
-                      src={newMember.image}
-                      alt="Preview"
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
               </div>
+
               <div className="flex justify-between">
                 <Button
                   type="button"
@@ -250,10 +220,7 @@ const Dashboard = () => {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl"
-                >
+                <Button type="submit" className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl">
                   Add Member
                 </Button>
               </div>

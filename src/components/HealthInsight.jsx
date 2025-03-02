@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import Navbar from "./shared/Navbar";
+import { useState } from "react";
 
 const HealthInsight = () => {
   const [topic, setTopic] = useState(""); // To hold the selected topic
