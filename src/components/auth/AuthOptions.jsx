@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "react-feather";
 import Navbar from "../shared/Navbar";
 import { useNavigate } from "react-router-dom";
+import Footer from "../shared/Footer";
 
 const AuthOptions = () => {
   const [isSignUp, setIsSignUp] = useState(true);
@@ -39,7 +40,7 @@ const AuthOptions = () => {
     } else {
       // Handle login logic
       try {
-        const response = await fetch("http://localhost:8080/auth/signup", {
+        const response = await fetch("http://localhost:8080/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -49,7 +50,7 @@ const AuthOptions = () => {
         const data = await response.json();
         if (data.success) {
           localStorage.setItem("authToken", data.token); 
-          navigate("/"); // Redirect to home page after successful login
+          navigate("/dashboard"); // Redirect to home page after successful login
         } else {
           alert(data.message); // Show error message
         }
@@ -62,8 +63,8 @@ const AuthOptions = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-6 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-6 sm:px-6 lg:px-8 ">
+        <div className="flex flex-col md:flex-row w-full max-w-5xl max-h-5xl bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Role Selection */}
           <div className="w-full md:w-1/2 p-6 flex flex-col items-center border-r border-gray-200">
             <h2 className="text-lg font-semibold mb-4">Choose Role</h2>
@@ -143,9 +144,7 @@ const AuthOptions = () => {
           </div>
         </div>
         
-        <footer className="w-full p-4 mt-4 bg-white shadow-md text-center text-sm">
-          © 2025 Family Health Care System
-        </footer>
+        <Footer/>
       </div>
     </>
   );
