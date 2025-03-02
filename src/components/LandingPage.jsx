@@ -1,9 +1,12 @@
-import React from "react";
 import { Button } from "./ui/button";
 import { useNavigate, Link } from "react-router-dom";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/auth'); // Redirect to the AuthOptions page
+  };
 
   return (
     <div className="w-full bg-gray-50 min-h-screen">
@@ -22,11 +25,11 @@ const LandingPage = () => {
             Family Health Management Simplified
           </h1>
           <p className="text-lg mb-6 text-teal-500 drop-shadow-md">
-            Store and monitor your family's health records, prescriptions, and
+            Store and monitor your family&apos;s health records, prescriptions, and
             treatments in one place.
           </p>
           <Button
-            onClick={() => navigate("/login")}
+            onClick={handleGetStarted}
             variant="primary"
             size="2xl"
             className="px-6 py-3 mt-4 bg-teal-600 text-white hover:bg-teal-700 transition-colors rounded-xl"
