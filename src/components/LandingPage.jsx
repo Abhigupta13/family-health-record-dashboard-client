@@ -5,8 +5,15 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate('/auth'); // Redirect to the AuthOptions page
+    const token = localStorage.getItem("token"); 
+  
+    if (token) {
+      navigate('/dashboard'); 
+    } else {
+      navigate('/auth'); 
+    }
   };
+  
 
   return (
     <div className="w-full bg-gray-50 min-h-screen">

@@ -12,8 +12,8 @@ const Navbar = () => {
 
   // Check login status on mount
   useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    setIsLoggedIn(!!authToken);
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
   }, []);
 
   // Close dropdowns when clicking outside
@@ -41,7 +41,7 @@ const Navbar = () => {
 
   // Handle Logout
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     setIsLogoutPopupOpen(false);
     setIsLoggedIn(false);
     navigate("/");

@@ -6,15 +6,15 @@ const Logout = () => {
 
   const handleLogout = () => {
     // Clear session data (localStorage, cookies, or token)
-    localStorage.removeItem("authToken"); // Or use another method to clear your session/cookie
+    localStorage.removeItem("token"); // Or use another method to clear your session/cookie
 
     // Redirect to home page
     navigate("/");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[99999]">
+      <div className="w-full max-w-md bg-white p-8 shadow-lg rounded-lg relative z-[100000]">
         <h2 className="text-2xl font-bold text-center mb-6">Logging Out</h2>
         <p className="text-center text-lg mb-6">Are you sure you want to log out?</p>
 

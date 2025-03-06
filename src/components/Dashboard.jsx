@@ -11,110 +11,93 @@ const Dashboard = () => {
     name: "",
     age: "",
     gender: "",
-    condition: "",
     relation: "",
-    image: "",
+    image: null,
+    email: "",
   });
+  const [familyMembers, setFamilyMembers] = useState([]);
 
-  const [familyMembers, setFamilyMembers] = useState(() => {
-    const savedMembers = localStorage.getItem("familyMembers");
-    return savedMembers
-      ? JSON.parse(savedMembers)
-      : [
-          // {
-          //   id: 1,
-          //   name: "John Doe",
-          //   condition: "Hypertension",
-          //   lastVisit: "10th Nov 2024",
-          //   image:
-          //     "https://health-e.in/wp-content/uploads/2023/12/healthcare-concept-with-futuristic-design-graphics-medical-treatment-icons.webp",
-          // },
-        ];
-  });
+  const fetchFamilyMembers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:8080/family", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch family members");
+      const data = await res.json();
+      setFamilyMembers(Array.isArray(data.data) ? data.data : []);
+    } catch (error) {
+      console.error("Error fetching family members:", error);
+      setFamilyMembers([]);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // Retrieve token from localStorage
-  
-    fetch("http://localhost:8080/family", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Pass the token here
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch family members");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setFamilyMembers(data);
-        } else {
-          setFamilyMembers([]); // Ensure it's always an array
-          console.error("Unexpected API response:", data);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching family members:", err);
-        setFamilyMembers([]); // Set empty array on error
-      });
+    fetchFamilyMembers();
   }, []);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setNewMember({
-      name: "",
-      age: "",
-      gender: "",
-      condition: "",
-      relation: "",
-      image: "",
-    });
+    setNewMember({ name: "", age: "", gender: "",  relation: "", image: null, email: "" });
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewMember({ ...newMember, [name]: value });
+    setNewMember({ ...newMember, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewMember({ ...newMember, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+      setNewMember({ ...newMember, image: file });
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!newMember.name || !newMember.age || !newMember.condition || !newMember.gender) {
+    if (!newMember.name || !newMember.age || !newMember.gender) {
       alert("Please fill in all fields.");
       return;
     }
-
-    const newId = familyMembers.length + 1;
-    setFamilyMembers([
-      { ...newMember, id: newId, lastVisit: "03/12/2024" },
-      ...familyMembers,
-    ]);
-    handleModalClose();
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      Object.entries(newMember).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
+      const res = await fetch("http://localhost:8080/family", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Failed to add family member");
+      fetchFamilyMembers();
+      handleModalClose();
+    } catch (error) {
+      console.error("Error adding family member:", error);
+      alert("Failed to add family member. Please try again.");
+    }
   };
 
-  const handleDeleteMember = (id) => {
-    const updatedFamilyMembers = familyMembers.filter(
-      (member) => member.id !== id
-    );
-    setFamilyMembers(updatedFamilyMembers);
+  const handleDeleteMember = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:8080/family/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to delete member");
+      fetchFamilyMembers();
+    } catch (error) {
+      console.error("Error deleting member:", error);
+    }
   };
-
   const handleShowDetails = (member) => {
-    navigate(`/family-member/${member.id}/details`);
+    navigate(`/family-member/${member._id}/details`);
   };
 
   return (
@@ -137,27 +120,27 @@ const Dashboard = () => {
 
         {/* Family Members */}
         {familyMembers.map((member) => (
-          <Card key={member.id} className="relative bg-white shadow-lg rounded-xl p-4">
+          <Card key={member._id} className="relative bg-white shadow-lg rounded-xl p-4">
             <img
               src={member.image}
               alt={member.name}
-              className="w-full h-48 object-cover rounded-md"
+              className="w-full h-56 object-cover rounded-md"
             />
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-[#0e100b]">{member.name}</h3>
-              <p className="text-sm text-[#2d218d]">Condition: {member.condition}</p>
-              <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit}</p>
+              <p className="text-sm text-[#2d218d]">Relation: {member.relation}</p>
+              <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit || "N/A"}</p>
             </div>
 
             <div className="mt-4 flex justify-between">
               <Button
                 onClick={() => handleShowDetails(member)}
-                className="bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
+                className="bg-teal-600 text-white hover:bg-teal-700 rouded-xl py-2 px-4"
               >
                 View Details
               </Button>
               <button
-                onClick={() => handleDeleteMember(member.id)}
+                onClick={() => handleDeleteMember(member._id)}
                 className="bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
               >
                 <FaTrash />
@@ -215,18 +198,24 @@ const Dashboard = () => {
                 </select>
               </div>
 
-              {/* <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Health Condition</label>
-                <input
-                  type="text"
-                  name="condition"
-                  value={newMember.condition}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Relation</label>
+                <select
+                  name="relation"
+                  value={newMember.relation}
                   onChange={handleInputChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="Enter condition"
                   required
-                />
-              </div> */}
+                >
+                  <option value="">Select Relation</option>
+                  <option value="Self">Self</option>
+                  <option value="Parent">Parent</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Child">Child</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div> 
 
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Upload Image</label>
@@ -235,6 +224,18 @@ const Dashboard = () => {
                   accept="image/*"
                   onChange={handleImageChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={newMember.email}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="Enter email (optional)"
                 />
               </div>
 

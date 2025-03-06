@@ -17,7 +17,7 @@ import ContactUs from './components/ContactUs';
 import ChatWithUs from './components/ChatWithUs';
 import HealthInsight from './components/HealthInsight';
 import EmergencyContact from './components/EmergencyCall';
-import MemberDetails from './components/ui/viewDetailsPage';
+import MemberDetails from './components/viewDetailsPage';
 import AuthOptions from './components/auth/AuthOptions'; 
 import Navbar from './components/shared/Navbar';
 
