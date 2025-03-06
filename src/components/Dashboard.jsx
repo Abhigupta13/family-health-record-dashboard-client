@@ -21,20 +21,46 @@ const Dashboard = () => {
     return savedMembers
       ? JSON.parse(savedMembers)
       : [
-          {
-            id: 1,
-            name: "John Doe",
-            condition: "Hypertension",
-            lastVisit: "10th Nov 2024",
-            image:
-              "https://health-e.in/wp-content/uploads/2023/12/healthcare-concept-with-futuristic-design-graphics-medical-treatment-icons.webp",
-          },
+          // {
+          //   id: 1,
+          //   name: "John Doe",
+          //   condition: "Hypertension",
+          //   lastVisit: "10th Nov 2024",
+          //   image:
+          //     "https://health-e.in/wp-content/uploads/2023/12/healthcare-concept-with-futuristic-design-graphics-medical-treatment-icons.webp",
+          // },
         ];
   });
 
   useEffect(() => {
-    localStorage.setItem("familyMembers", JSON.stringify(familyMembers));
-  }, [familyMembers]);
+    const token = localStorage.getItem("token"); // Retrieve token from localStorage
+  
+    fetch("http://localhost:8080/family", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Pass the token here
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch family members");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setFamilyMembers(data);
+        } else {
+          setFamilyMembers([]); // Ensure it's always an array
+          console.error("Unexpected API response:", data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching family members:", err);
+        setFamilyMembers([]); // Set empty array on error
+      });
+  }, []);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
@@ -189,7 +215,7 @@ const Dashboard = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Health Condition</label>
                 <input
                   type="text"
@@ -200,7 +226,7 @@ const Dashboard = () => {
                   placeholder="Enter condition"
                   required
                 />
-              </div>
+              </div> */}
 
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Upload Image</label>
