@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../shared/Footer";
 
 const AuthOptions = () => {
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [role, setRole] = useState("User");
   const [email, setEmail] = useState("");
@@ -30,7 +30,6 @@ const AuthOptions = () => {
       const data = await response.json();
       if (data.success) {
         const existingToken = localStorage.getItem("token");
-
         if (!existingToken || existingToken === "undefined") {
           // If token is not present or is explicitly "undefined", set it
           localStorage.setItem("token", data.data.token);
@@ -40,6 +39,7 @@ const AuthOptions = () => {
           localStorage.setItem("token", data.data.token);
           console.log("Token updated:", data.data.token);
         }
+        console.log("login/signup complated - go to dashboard")
         navigate("/dashboard");
       } else {
         alert(data.message);

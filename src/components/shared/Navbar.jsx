@@ -86,9 +86,9 @@ const Navbar = () => {
         <Link to="/" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Home
         </Link>
-        <Link to="/dashboard" className="text-lg text-white hover:text-yellow-300 transition duration-300">
+        {isLoggedIn && (<Link to="/dashboard" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Dashboard
-        </Link>
+        </Link>)}
 
         {/* Features Dropdown */}
         <div className="relative">
@@ -100,9 +100,9 @@ const Navbar = () => {
               <Link to="/health-insight" className="block px-4 py-2 hover:bg-gray-100">
                 Health Insights
               </Link>
-              <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
+              {isLoggedIn && (<Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
                 Medical Records
-              </Link>
+              </Link>)}
               <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-100">
                 Emergency Contacts
               </Link>

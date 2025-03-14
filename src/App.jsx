@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import TermsCondition from './components/TermsCondition';
@@ -20,8 +20,52 @@ import EmergencyContact from './components/EmergencyCall';
 import MemberDetails from './components/viewDetailsPage';
 import AuthOptions from './components/auth/AuthOptions'; 
 import Navbar from './components/shared/Navbar';
+import { useState, useEffect } from 'react';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsAuthenticated(false);
+      setLoading(false);
+      
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/auth/isLogged', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      if (response.ok && data.isLoggedIn) {
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      localStorage.removeItem('token');
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Or your loading component
+  }
+
   return (
     <Router>
       <div>
@@ -29,7 +73,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<AuthOptions />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route 
+            path="/dashboard" 
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/auth" />} 
+          />
           <Route path="/terms" element={<TermsCondition />} />
           <Route path="/profile/view-profile" element={<ViewProfile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
