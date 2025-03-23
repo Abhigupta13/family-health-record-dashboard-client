@@ -5,7 +5,6 @@ import Dashboard from './components/Dashboard';
 import TermsCondition from './components/TermsCondition';
 import ViewProfile from './components/ViewProfile';
 import ForgotPassword from './components/FogotPassword';
-import Logout from './components/auth/Logout';
 import PrescriptionTrack from './components/PresciptionTrack';
 import DoctorAccess from './components/DoctorAccess';
 import PrescriptionEdit from './components/PrescriptionEdit';
@@ -20,56 +19,26 @@ import EmergencyContact from './components/EmergencyCall';
 import MemberDetails from './components/viewDetailsPage';
 import AuthOptions from './components/auth/AuthOptions'; 
 import Navbar from './components/shared/Navbar';
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
+import { StoreContext } from './context/StoreContext';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setIsAuthenticated(false);
-      setLoading(false);
-      
-      return;
-    }
-
-    try {
-      const response = await fetch('http://localhost:8080/auth/isLogged', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const data = await response.json();
-      if (response.ok && data.isLoggedIn) {
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('token');
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
+  const { isAuthenticated, loading } = useContext(StoreContext);
   if (loading) {
-    return <div>Loading...</div>; // Or your loading component
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+        <span className="ml-3 text-lg text-teal-600">Loading...</span>
+      </div>
+    );
   }
 
   return (
     <Router>
       <div>
         <Navbar/>
+        <Toaster />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<AuthOptions />} />
@@ -80,7 +49,6 @@ function App() {
           <Route path="/terms" element={<TermsCondition />} />
           <Route path="/profile/view-profile" element={<ViewProfile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/logout" element={<Logout />} />
           <Route path="/prescription-tracking" element={<PrescriptionTrack />} />
           <Route path="/doctor-access" element={<DoctorAccess />} />
           <Route path="/health-support" element={<HealthSupport />} />

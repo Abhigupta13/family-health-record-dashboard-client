@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Eye, EyeOff } from "react-feather";
 import { useNavigate } from "react-router-dom";
 import Footer from "../shared/Footer";
+import { StoreContext } from "../../context/StoreContext";
 
 const AuthOptions = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -11,42 +12,18 @@ const AuthOptions = () => {
   const [password, setPassword] = useState("");
   const [selectedCard, setSelectedCard] = useState("User");
   const navigate = useNavigate();
+  const { login, signup } = useContext(StoreContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const UserData = { email, password, role };
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/auth/${isSignUp ? "signup" : "login"}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(UserData),
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        const existingToken = localStorage.getItem("token");
-        if (!existingToken || existingToken === "undefined") {
-          // If token is not present or is explicitly "undefined", set it
-          localStorage.setItem("token", data.data.token);
-          console.log("Token set:", data.data.token);
-        } else {
-          // If token exists, update it
-          localStorage.setItem("token", data.data.token);
-          console.log("Token updated:", data.data.token);
-        }
-        console.log("login/signup complated - go to dashboard")
-        navigate("/dashboard");
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error(`Error during ${isSignUp ? "sign-up" : "login"}:`, error);
+    if (isSignUp) {
+      await signup(email, password, role);
+    } else {
+      await login(email, password);
     }
+
+    navigate("/dashboard");
   };
 
   return (

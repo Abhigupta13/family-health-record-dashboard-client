@@ -1,14 +1,16 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaEdit, FaTrash, FaEye, FaDownload, FaPlus } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { StoreContext } from "../context/StoreContext";
 
 const API_BASE_URL = "http://localhost:8080/health/family";
 
 const MemberDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useContext(StoreContext);
 
   const [member, setMember] = useState(null);
   const [currentHealthRecord, setCurrentHealthRecord] = useState(null);
@@ -23,20 +25,22 @@ const MemberDetails = () => {
     medications: [],
   });
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(null);
   const [viewMode, setViewMode] = useState('view');
   const [selectedImages, setSelectedImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-    fetchMemberDetails(storedToken);
-  }, [id]);
+    if (isAuthenticated) {
+      fetchMemberDetails();
+    } else {
+      navigate("/auth");
+    }
+  }, [id, isAuthenticated, navigate]);
 
-  const fetchMemberDetails = async (token) => {
+  const fetchMemberDetails = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
       const response = await axios.get(`${API_BASE_URL}/${id}/records`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -144,14 +148,13 @@ const MemberDetails = () => {
       });
 
       let response;
-      console.log(modalType)
       if (modalType === "edit" && selectedRecord._id) {
         response = await axios.put(
           `${API_BASE_URL}/${id}/records/${selectedRecord._id}`,
           formData,
           {
             headers: { 
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
               'Content-Type': 'multipart/form-data'
             }
           }
@@ -163,13 +166,12 @@ const MemberDetails = () => {
           toast.success('Record updated successfully');
         }
       } else {
-        console.log("post")
         response = await axios.post(
           `${API_BASE_URL}/${id}/records`,
           formData,
           {
             headers: { 
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
               'Content-Type': 'multipart/form-data'
             }
           }
@@ -193,7 +195,7 @@ const MemberDetails = () => {
   const handleDeleteRecord = async (recordId) => {
     try {
       await axios.delete(`${API_BASE_URL}/${id}/records/${recordId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setPastRecords(pastRecords.filter((record) => record._id !== recordId));
     } catch (error) {

@@ -1,19 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage } from "../ui/avatar";
+import { StoreContext } from "../../context/StoreContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const { isAuthenticated,logOut } = useContext(StoreContext);
 
   // Check login status on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    console.log("navbar", token);
   }, []);
 
   // Close dropdowns when clicking outside
@@ -41,12 +42,10 @@ const Navbar = () => {
 
   // Handle Logout
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logOut();
     setIsLogoutPopupOpen(false);
-    setIsLoggedIn(false);
     navigate("/");
   };
-
   return (
     <nav className="flex w-full items-center justify-between p-5 bg-gradient-to-r from-[#0b3558] to-[#1976d2] shadow-md relative">
       {/* Logo Section */}
@@ -86,7 +85,7 @@ const Navbar = () => {
         <Link to="/" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Home
         </Link>
-        {isLoggedIn && (<Link to="/dashboard" className="text-lg text-white hover:text-yellow-300 transition duration-300">
+        {isAuthenticated && (<Link to="/dashboard" className="text-lg text-white hover:text-yellow-300 transition duration-300">
           Dashboard
         </Link>)}
 
@@ -100,7 +99,7 @@ const Navbar = () => {
               <Link to="/health-insight" className="block px-4 py-2 hover:bg-gray-100">
                 Health Insights
               </Link>
-              {isLoggedIn && (<Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
+              {isAuthenticated && (<Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
                 Medical Records
               </Link>)}
               <Link to="/emergency-call" className="block px-4 py-2 hover:bg-gray-100">
@@ -131,7 +130,7 @@ const Navbar = () => {
         </div>
 
         {/* Profile Dropdown (Only for logged-in users) */}
-        {isLoggedIn && (
+        {isAuthenticated && (
           <div className="relative">
             <button className="flex items-center text-white" onClick={() => toggleDropdown("profile")}>
               <Avatar className="cursor-pointer">
@@ -154,15 +153,16 @@ const Navbar = () => {
 
       {/* Logout Confirmation Popup */}
       {isLogoutPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Logging Out</h2>
-            <p className="mb-4">Are you sure you want to log out?</p>
-            <div className="flex justify-center space-x-4">
-              <button className="bg-red-500 text-white px-4 py-2 rounded-md" onClick={handleLogout}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm z-50">
+          <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-[90%] max-w-md">
+            <h2 className="text-2xl font-semibold text-gray-900 text-center">Logging Out</h2>
+            <p className="text-gray-600 text-center mt-3">Are you sure you want to log out?</p>
+            
+            <div className="flex justify-center mt-6 space-x-4">
+              <button onClick={handleLogout} className="px-6 py-3 text-white bg-red-600 rounded-xl shadow-md transition-all duration-200 hover:bg-red-700 hover:shadow-lg active:scale-95">
                 Yes, Log out
               </button>
-              <button className="bg-gray-300 px-4 py-2 rounded-md" onClick={() => setIsLogoutPopupOpen(false)}>
+              <button onClick={() => setIsLogoutPopupOpen(false)} className="px-6 py-3 text-gray-800 bg-gray-200 rounded-xl shadow-md transition-all duration-200 hover:bg-gray-300 hover:shadow-lg active:scale-95">
                 Cancel
               </button>
             </div>

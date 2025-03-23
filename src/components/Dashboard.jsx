@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { FaTrash, FaPlus } from "react-icons/fa";
+import { StoreContext } from "../context/StoreContext";
+import { FamilyContext } from '../context/FamilyContext';
+import { toast } from 'react-hot-toast'; // Importing react-toastify
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useContext(StoreContext);
+  const { familyMembers, fetchFamilyMembers, addFamilyMember, deleteFamilyMember } = useContext(FamilyContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMember, setNewMember] = useState({
     name: "",
@@ -15,35 +20,19 @@ const Dashboard = () => {
     image: null,
     email: "",
   });
-  const [familyMembers, setFamilyMembers] = useState([]);
-
-  const fetchFamilyMembers = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/family", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Failed to fetch family members");
-      const data = await res.json();
-      setFamilyMembers(Array.isArray(data.data) ? data.data : []);
-    } catch (error) {
-      console.error("Error fetching family members:", error);
-      setFamilyMembers([]);
-    }
-  };
 
   useEffect(() => {
-    fetchFamilyMembers();
-  }, []);
+    if (isAuthenticated) {
+      fetchFamilyMembers();
+    } else {
+      navigate("/auth");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setNewMember({ name: "", age: "", gender: "",  relation: "", image: null, email: "" });
+    setNewMember({ name: "", age: "", gender: "", relation: "", image: null, email: "" });
   };
 
   const handleInputChange = (e) => {
@@ -60,42 +49,21 @@ const Dashboard = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!newMember.name || !newMember.age || !newMember.gender) {
-      alert("Please fill in all fields.");
+      toast.error("Please fill in all fields."); // Using toast for error message
       return;
     }
-    try {
-      const token = localStorage.getItem("token");
-      const formData = new FormData();
-      Object.entries(newMember).forEach(([key, value]) => {
-        if (value) formData.append(key, value);
-      });
-      const res = await fetch("http://localhost:8080/family", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Failed to add family member");
-      fetchFamilyMembers();
-      handleModalClose();
-    } catch (error) {
-      console.error("Error adding family member:", error);
-      alert("Failed to add family member. Please try again.");
-    }
+    await addFamilyMember(newMember);
+    handleModalClose();
+    toast.success("Family member added successfully!"); // Success message
   };
 
   const handleDeleteMember = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/family/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to delete member");
-      fetchFamilyMembers();
-    } catch (error) {
-      console.error("Error deleting member:", error);
+    if (window.confirm("Are you sure you want to delete this family member?")) {
+      await deleteFamilyMember(id);
+      toast.success("Family member deleted successfully!"); // Success message
     }
   };
+
   const handleShowDetails = (member) => {
     navigate(`/family-member/${member._id}/details`);
   };
@@ -120,11 +88,11 @@ const Dashboard = () => {
 
         {/* Family Members */}
         {familyMembers.map((member) => (
-          <Card key={member._id} className="relative bg-white shadow-lg rounded-xl p-4">
+          <Card key={member._id} className="bg-white shadow-lg rounded-xl p-4">
             <img
               src={member.image}
               alt={member.name}
-              className="w-full h-56 object-cover rounded-md"
+              className="w-full h-56 object-contain rounded-md transform scale-x-150 scale-y-110" // Adjusted to zoom out the image
             />
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-[#0e100b]">{member.name}</h3>
