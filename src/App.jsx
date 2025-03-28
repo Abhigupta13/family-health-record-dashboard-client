@@ -22,6 +22,7 @@ import Navbar from './components/shared/Navbar';
 import { useContext } from 'react';
 import { StoreContext } from './context/StoreContext';
 import { Toaster } from 'react-hot-toast';
+import Footer from './components/shared/Footer';
 
 function App() {
   const { isAuthenticated, loading } = useContext(StoreContext);
@@ -62,6 +63,7 @@ function App() {
           <Route path="/health-insight" element={<HealthInsight />} />
           <Route path="/family-member/:id/details" element={<MemberDetails />} />
         </Routes>
+        <Footer/>
       </div>
     </Router>
   );

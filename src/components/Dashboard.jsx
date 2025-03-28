@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { FaTrash, FaPlus } from "react-icons/fa";
+import { FaTrash, FaPlus, FaEdit } from "react-icons/fa";
 import { StoreContext } from "../context/StoreContext";
 import { FamilyContext } from '../context/FamilyContext';
 import { toast } from 'react-hot-toast'; // Importing react-toastify
@@ -10,9 +10,10 @@ import { toast } from 'react-hot-toast'; // Importing react-toastify
 const Dashboard = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(StoreContext);
-  const { familyMembers, fetchFamilyMembers, addFamilyMember, deleteFamilyMember } = useContext(FamilyContext);
+  const { familyMembers, fetchFamilyMembers, addFamilyMember, deleteFamilyMember, updateFamilyMember } = useContext(FamilyContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMember, setNewMember] = useState({
+    _id:"",
     name: "",
     age: "",
     gender: "",
@@ -32,7 +33,7 @@ const Dashboard = () => {
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setNewMember({ name: "", age: "", gender: "", relation: "", image: null, email: "" });
+    setNewMember({ _id:"",name: "", age: "", gender: "", relation: "", image: null, email: "" });
   };
 
   const handleInputChange = (e) => {
@@ -52,9 +53,18 @@ const Dashboard = () => {
       toast.error("Please fill in all fields."); // Using toast for error message
       return;
     }
-    await addFamilyMember(newMember);
+
+    if (newMember._id) {
+      // Update existing member
+      await updateFamilyMember(newMember); // Call the update function
+      toast.success("Family member updated successfully!"); // Success message
+    } else {
+      // Add new member
+      await addFamilyMember(newMember);
+      toast.success("Family member added successfully!"); // Success message
+    }
+
     handleModalClose();
-    toast.success("Family member added successfully!"); // Success message
   };
 
   const handleDeleteMember = async (id) => {
@@ -66,6 +76,19 @@ const Dashboard = () => {
 
   const handleShowDetails = (member) => {
     navigate(`/family-member/${member._id}/details`);
+  };
+
+  const handleEdit = (member) => {
+    setNewMember({
+      _id: member._id, // Set the ID for the member being edited
+      name: member.name,
+      age: member.age,
+      gender: member.gender,
+      relation: member.relation,
+      image: member.image, // Keep the existing image
+      email: member.email,
+    });
+    setIsModalOpen(true); // Open the modal for editing
   };
 
   return (
@@ -88,11 +111,11 @@ const Dashboard = () => {
 
         {/* Family Members */}
         {familyMembers.map((member) => (
-          <Card key={member._id} className="bg-white shadow-lg rounded-xl p-4">
+          <Card key={member._id} className="bg-white shadow-lg rounded-xl p-8">
             <img
               src={member.image}
               alt={member.name}
-              className="w-full h-56 object-contain rounded-md transform scale-x-150 scale-y-110" // Adjusted to zoom out the image
+              className="w-full h-72 object-cover rounded-md" // Adjusted to zoom out the image
             />
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-[#0e100b]">{member.name}</h3>
@@ -100,18 +123,24 @@ const Dashboard = () => {
               <p className="text-sm text-[#d14062]">Last Visit: {member.lastVisit || "N/A"}</p>
             </div>
 
-            <div className="mt-4 flex justify-between">
+            <div className="mt-4 flex justify-around -mx-5">
+              <button
+                onClick={() => handleDeleteMember(member._id)}
+                className="bg-red-600 p-2.5 rounded-full text-white hover:bg-red-700"
+              >
+                <FaTrash />
+              </button>
               <Button
                 onClick={() => handleShowDetails(member)}
-                className="bg-teal-600 text-white hover:bg-teal-700 rouded-xl py-2 px-4"
+                className="bg-teal-600 text-white hover:bg-teal-700 rounded-xl py-2 px-4"
               >
                 View Details
               </Button>
               <button
-                onClick={() => handleDeleteMember(member._id)}
-                className="bg-red-600 p-2 rounded-full text-white hover:bg-red-700"
+                onClick={() => handleEdit(member)} // Open edit modal with current data
+                className="bg-blue-600 p-2.5 rounded-full text-white hover:bg-blue-700"
               >
-                <FaTrash />
+                <FaEdit /> {/* Edit icon */}
               </button>
             </div>
           </Card>
@@ -122,7 +151,9 @@ const Dashboard = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-bold text-teal-600 mb-4">Add New Member</h2>
+            <h2 className="text-2xl font-bold text-teal-600 mb-4">
+              {newMember._id ? "Edit Member" : "Add New Member"} {/* Change title based on context */}
+            </h2>
             <form onSubmit={handleFormSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 text-left">Full Name</label>
@@ -160,9 +191,9 @@ const Dashboard = () => {
                   required
                 >
                   <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
 
@@ -216,13 +247,14 @@ const Dashboard = () => {
                   Cancel
                 </Button>
                 <Button type="submit" className="bg-teal-500 hover:bg-teal-600 text-white rounded-xl">
-                  Add Member
+                  {newMember._id ? "Update Member" : "Add Member"} {/* Change button text based on context */}
                 </Button>
               </div>
             </form>
           </div>
         </div>
       )}
+      
     </div>
   );
 };

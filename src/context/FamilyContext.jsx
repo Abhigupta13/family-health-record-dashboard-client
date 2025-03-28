@@ -1,9 +1,11 @@
 import { createContext, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export const FamilyContext = createContext();
 
 export const FamilyProvider = ({ children }) => {
   const [familyMembers, setFamilyMembers] = useState([]);
+  const token = localStorage.getItem("token");
 
   const fetchFamilyMembers = async () => {
     try {
@@ -26,7 +28,6 @@ export const FamilyProvider = ({ children }) => {
 
   const addFamilyMember = async (newMember) => {
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
       Object.entries(newMember).forEach(([key, value]) => {
         if (value) formData.append(key, value);
@@ -44,22 +45,25 @@ export const FamilyProvider = ({ children }) => {
     }
   };
 
-  const updateFamilyMember = async (updatedMember) => {
+  const updateFamilyMember = async (member) => {
+    console.log("calling")
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/family/${updatedMember.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedMember),
+      const formData = new FormData();
+      Object.entries(member).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
       });
-      if (!res.ok) throw new Error("Failed to update family member");
+      const response = await fetch(`http://localhost:8080/family/${member._id}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+        body:formData,
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update family member');
+      }
       fetchFamilyMembers(); // Refresh the list after updating
     } catch (error) {
       console.error("Error updating family member:", error);
-      alert("Failed to update family member. Please try again.");
+      toast.error("Failed to update family member.");
     }
   };
 

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Eye, EyeOff } from "react-feather";
 import { useNavigate } from "react-router-dom";
 import Footer from "../shared/Footer";
@@ -12,7 +12,13 @@ const AuthOptions = () => {
   const [password, setPassword] = useState("");
   const [selectedCard, setSelectedCard] = useState("User");
   const navigate = useNavigate();
-  const { login, signup } = useContext(StoreContext);
+  const { login, signup, isAuthenticated } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -127,7 +133,6 @@ const AuthOptions = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

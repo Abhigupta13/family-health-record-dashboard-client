@@ -15,7 +15,6 @@ const Home = () => {
         <Testimonial/>
         <CtaSection/> {/*Join family section */}
         <Faq/>
-        <Footer/>
     </div>
   )
 }
