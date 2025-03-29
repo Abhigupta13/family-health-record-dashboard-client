@@ -1,4 +1,3 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
@@ -59,7 +58,7 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Contact Info</h3>
             <p>Address: National Housing Complex, Ranchi, Jharkhand, India</p>
-            <p>Call Us: (+91) 8988456764</p>
+            <p>Call Us: (+91) 8107843028</p>
             <p>Email: info@healthcaresuccess.com</p>
           </div>
 
@@ -117,7 +116,7 @@ const Footer = () => {
           {/* Copyright */}
           <div className="flex items-center">
             <FontAwesomeIcon icon={faCopyright} className="text-sm mr-2" />
-            <span className="text-sm">Reserved by Dhruv, Abhishek, Nitesh</span>
+            <span className="text-sm">Reserved by Abhishek Gupta</span>
           </div>
 
           {/* Terms & Privacy Links */}
