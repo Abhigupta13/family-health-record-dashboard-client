@@ -4,8 +4,8 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { StoreContext } from "../context/StoreContext";
+import { API_BASE_URL } from "@/utils/constant";
 
-const API_BASE_URL = "http://localhost:8080/health/family";
 
 const MemberDetails = () => {
   const { id } = useParams();
@@ -41,7 +41,7 @@ const MemberDetails = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/${id}/records`, {
+      const response = await axios.get(`${API_BASE_URL}/api/health/family/${id}/records`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
@@ -52,6 +52,7 @@ const MemberDetails = () => {
       }
     } catch (error) {
       toast.error("Error fetching member details");
+      console.error(error.message)
     } finally {
       setLoading(false);
     }
@@ -59,13 +60,14 @@ const MemberDetails = () => {
 
   const fetchHealthRecords = async (token) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${id}/records`, {
+      const response = await axios.get(`${API_BASE_URL}/api/health/family/${id}/records`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPastRecords(response.data.data.healthRecords);
       setCurrentHealthRecord(response.data.data.healthRecords[0] || null);
     } catch (error) {
       toast.error("Error fetching health records");
+      console.error(error.message)
     }
   };
 
@@ -126,9 +128,10 @@ const MemberDetails = () => {
       document.body.removeChild(a);
     } catch (error) {
       toast.error('Failed to download image');
+      console.error(error.message)
     }
+    
   };
-
   const handleAddOrUpdateRecord = async (e) => {
     e.preventDefault();
     try {
@@ -150,7 +153,7 @@ const MemberDetails = () => {
       let response;
       if (modalType === "edit" && selectedRecord._id) {
         response = await axios.put(
-          `${API_BASE_URL}/${id}/records/${selectedRecord._id}`,
+          `${API_BASE_URL}/api/health/family/${id}/records/${selectedRecord._id}`,
           formData,
           {
             headers: { 
@@ -167,7 +170,7 @@ const MemberDetails = () => {
         }
       } else {
         response = await axios.post(
-          `${API_BASE_URL}/${id}/records`,
+          `${API_BASE_URL}/api/health/family/${id}/records`,
           formData,
           {
             headers: { 
@@ -184,6 +187,7 @@ const MemberDetails = () => {
       closeModal();
     } catch (error) {
       toast.error('Failed to save record');
+      console.error(error.message)
     }
   };
 
@@ -194,7 +198,7 @@ const MemberDetails = () => {
 
   const handleDeleteRecord = async (recordId) => {
     try {
-      await axios.delete(`${API_BASE_URL}/${id}/records/${recordId}`, {
+      await axios.delete(`${API_BASE_URL}/api/health/family/${id}/records/${recordId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setPastRecords(pastRecords.filter((record) => record._id !== recordId));

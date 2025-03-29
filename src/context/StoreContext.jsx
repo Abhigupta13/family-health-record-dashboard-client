@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { FamilyProvider } from './FamilyContext'; // Import the FamilyProvider
+import { API_BASE_URL } from '@/utils/constant';
 
 export const StoreContext = createContext();
 
@@ -18,7 +19,7 @@ export const StoreProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/auth/isLogged', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/isLogged`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -49,7 +50,7 @@ export const StoreProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:8080/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -71,7 +72,7 @@ export const StoreProvider = ({ children }) => {
 
   const signup = async (email, password, role) => {
     try {
-      const response = await fetch('http://localhost:8080/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, role }),
@@ -105,7 +106,7 @@ export const StoreProvider = ({ children }) => {
      login, 
      signup }}>
       <FamilyProvider>
-        {children}
+          {children}
       </FamilyProvider>
     </StoreContext.Provider>
   );

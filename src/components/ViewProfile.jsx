@@ -4,6 +4,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "react-hot-toast";
+import { API_BASE_URL } from "@/utils/constant";
 
 // Custom Toggle Switch Component
 const ToggleSwitch = ({ id, checked, onChange, disabled }) => {
@@ -43,7 +44,7 @@ const ViewProfile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/auth/profile', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -101,7 +102,7 @@ const ViewProfile = () => {
         formData.append('image', blob, 'profile.jpg');
       }
 
-      const response = await fetch('http://localhost:8080/auth/profile', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -136,7 +137,7 @@ const ViewProfile = () => {
         [id]: !notifications[id]
       };
 
-      const response = await fetch('http://localhost:8080/notifications/update-preferences', {
+      const response = await fetch(`${API_BASE_URL}/api/notifications/update-preferences`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
