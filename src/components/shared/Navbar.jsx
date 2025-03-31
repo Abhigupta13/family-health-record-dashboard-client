@@ -48,7 +48,7 @@ const Navbar = () => {
   };
   return (
     <nav className="flex w-full items-center justify-between p-5 bg-gradient-to-r from-[#0b3558] to-[#1976d2] shadow-md relative">
-      {/* Logo Section */}
+   
       <div className="text-3xl text-white font-bold flex items-center space-x-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@ const Navbar = () => {
           />
         </svg>
         <Link to="/" className="text-4xl font-bold text-white">
-          HealthCare
+         FamilyCare+
         </Link>
       </div>
 
