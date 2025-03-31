@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/utils/constant';
 import { createContext, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -10,7 +11,7 @@ export const FamilyProvider = ({ children }) => {
   const fetchFamilyMembers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/family", {
+      const res = await fetch(`${API_BASE_URL}/api/family`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +33,7 @@ export const FamilyProvider = ({ children }) => {
       Object.entries(newMember).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
-      const res = await fetch("http://localhost:8080/family", {
+      const res = await fetch(`${API_BASE_URL}/api/family`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -52,7 +53,7 @@ export const FamilyProvider = ({ children }) => {
       Object.entries(member).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
-      const response = await fetch(`http://localhost:8080/family/${member._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/family/${member._id}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body:formData,
@@ -70,7 +71,7 @@ export const FamilyProvider = ({ children }) => {
   const deleteFamilyMember = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:8080/family/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/family/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
