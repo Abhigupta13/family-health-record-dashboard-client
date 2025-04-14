@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaEdit, FaTrash, FaEye, FaDownload, FaPlus } from "react-icons/fa";
+import { FaArrowLeft, FaEdit, FaTrash, FaEye, FaDownload, FaPlus, FaClosedCaptioning, FaCross, FaWindowClose } from "react-icons/fa";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -45,6 +45,7 @@ const MemberDetails = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
+        // console.log(response.data.data)
         setMember(response.data.data);
         fetchHealthRecords(token);
       } else {
@@ -246,9 +247,9 @@ const MemberDetails = () => {
           </div>
           <div className="text-left space-y-3 col-span-2">
             <h1 className="text-3xl font-bold text-teal-600">{member.familyMember.name}</h1>
-            <p className="text-gray-700"><strong>Email:</strong> {member.familyMember.email || "N/A"}</p>
-            <p className="text-gray-700"><strong>Relation:</strong> {member.familyMember.relation || "N/A"}</p>
-            <p className="text-gray-700"><strong>Last Visit:</strong> {member.familyMember.lastVisit || "N/A"}</p>
+            <p className="text-gray-700"><strong>Email:</strong> {member.familyMember.email || "Please add your email address"}</p>
+            <p className="text-gray-700"><strong>Relation:</strong> {member.familyMember.relation || "Please add your relationship"}</p>
+            <p className="text-gray-700"><strong>Last Doctor Visit:</strong> {new Date(member.familyMember.last_doctor_visit).toLocaleDateString('en-GB') || "N/A"}</p>
           </div>
         </div>
       </div>
@@ -260,6 +261,8 @@ const MemberDetails = () => {
             <p><strong>Illness:</strong> {currentHealthRecord.illness}</p>
             <p><strong>Doctor Name:</strong> {currentHealthRecord.doctor_name}</p>
             <p><strong>Doctor Notes:</strong> {currentHealthRecord.doctor_notes}</p>
+            <p><strong>Visit Date:</strong> {new Date(currentHealthRecord.visit_date).toLocaleDateString('en-GB')}</p>
+              
           </div>
         ) : (
           <div className="text-gray-700">
@@ -285,6 +288,7 @@ const MemberDetails = () => {
                 <div>
                   <p><strong>Illness:</strong> {record.illness}</p>
                   <p><strong>Doctor:</strong> {record.doctor_name}</p>
+                  <p><strong>Visit Date:</strong> {new Date(record.visit_date).toLocaleDateString('en-GB')}</p>
                 </div>
                 <div className="flex space-x-2">
                   <button onClick={() => handleViewRecord(record)} className="text-white bg-sky-500 p-2 rounded-md hover:bg-sky-600 transition-all">
@@ -313,12 +317,20 @@ const MemberDetails = () => {
                 {viewMode === 'view' ? 'View Health Record' : 'Edit Health Record'}
               </h3>
               {viewMode === 'view' && (
-                <button
-                  onClick={handleEditInViewMode}
-                  className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all"
-                >
-                  <FaEdit />
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleEditInViewMode}
+                    className="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600 transition-all"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => setModalType(null)} // Assuming this closes the modal
+                    className="bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition-all"
+                  >
+                    <FaWindowClose/>
+                  </button>
+                </div>
               )}
             </div>
 

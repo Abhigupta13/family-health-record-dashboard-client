@@ -14,7 +14,7 @@ const Navbar = () => {
   // Check login status on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("navbar", token);
+    console.log("navbar", !!token); 
   }, []);
 
   // Close dropdowns when clicking outside
