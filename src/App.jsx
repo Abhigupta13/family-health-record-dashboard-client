@@ -15,7 +15,6 @@ import HealthSupport from './components/HealthSupport';
 import ContactUs from './components/ContactUs';
 import ChatWithUs from './components/ChatWithUs';
 import HealthInsight from './components/HealthInsight';
-import EmergencyContact from './components/EmergencyCall';
 import MemberDetails from './components/viewDetailsPage';
 import AuthOptions from './components/auth/AuthOptions'; 
 import Navbar from './components/shared/Navbar';
@@ -23,6 +22,7 @@ import { useContext } from 'react';
 import { StoreContext } from './context/StoreContext';
 import { Toaster } from 'react-hot-toast';
 import Footer from './components/shared/Footer';
+import EmergencyContacts from './components/EmergencyContacts';
 
 function App() {
   const { isAuthenticated, loading } = useContext(StoreContext);
@@ -58,7 +58,7 @@ function App() {
           <Route path="/cta-section" element={<CtaSection />} />
           <Route path="/testimonial" element={<Testimonial />} />
           <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/emergency-call" element={<EmergencyContact />} />
+          <Route path="/emergency-contact" element={<EmergencyContacts />} />
           <Route path="/chat-with-us" element={<ChatWithUs />} />
           <Route path="/health-insight" element={<HealthInsight />} />
           <Route path="/family-member/:id/details" element={<MemberDetails />} />

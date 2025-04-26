@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaDownload, FaWindowClose, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaDownload, FaWindowClose, FaTrash, FaQrcode } from "react-icons/fa";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -8,6 +8,8 @@ import { API_BASE_URL } from "@/utils/constant";
 import HealthTimeline from "./HealthTimeline";
 import HealthChart from "./HealthChart";
 import ImageViewer from 'react-simple-image-viewer';
+import QRCode from 'qrcode.react';
+import { jsPDF } from 'jspdf';
 
 const MemberDetails = () => {
   const { id } = useParams();
@@ -27,6 +29,8 @@ const MemberDetails = () => {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [imageViewerIndex, setImageViewerIndex] = useState(0);
   const [imageViewerImages, setImageViewerImages] = useState([]);
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [qrData, setQrData] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -130,24 +134,6 @@ const MemberDetails = () => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleDownloadImage = async (imageUrl) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'health-record-image.jpg';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      toast.error('Failed to download image');
-      console.error(error.message)
-    }
-    
-  };
   const handleAddRecord = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -369,6 +355,355 @@ const MemberDetails = () => {
     return `${dayWithSuffix} ${month} ${year}`;
   };
 
+  const generatePDF = async () => {
+    if (!member || !currentHealthRecord) {
+      toast.error("No health record data available");
+      return;
+    }
+  
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+  
+      // Header
+      doc.setFontSize(24);
+      doc.setTextColor(0, 128, 128);
+      doc.text('Family Health Records', 105, 20, { align: 'center' });
+      doc.setDrawColor(0, 128, 128);
+      doc.line(20, 25, 190, 25); // Header underline
+  
+      // Member Info Section
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Member Information', 20, 40);
+      doc.setFontSize(12);
+      doc.text(`Name: ${member.familyMember.name}`, 20, 50);
+      doc.text(`Email: ${member.familyMember.email || 'N/A'}`, 20, 58);
+      doc.text(`Relation: ${member.familyMember.relation || 'N/A'}`, 20, 66);
+      doc.text(`Last Visit: ${formatDate(member.familyMember.last_doctor_visit) || 'N/A'}`, 20, 74);
+  
+      // Current Health Record Section
+      doc.setFontSize(16);
+      doc.text('Current Health Record', 20, 90);
+      doc.setFontSize(12);
+      doc.text(`Illness: ${currentHealthRecord.illness || 'N/A'}`, 20, 100);
+      doc.text(`Doctor: ${currentHealthRecord.doctor_name || 'N/A'}`, 20, 108);
+      doc.text(`Visit Date: ${formatDate(currentHealthRecord.visit_date) || 'N/A'}`, 20, 116);
+      doc.text(`Follow-up Date: ${formatDate(currentHealthRecord.follow_up_date) || 'N/A'}`, 20, 124);
+  
+      // Current Vital Signs
+      doc.setFontSize(16);
+      doc.text('Current Vital Signs', 20, 140);
+      doc.setFontSize(12);
+      if (currentHealthRecord.blood_pressure) {
+        doc.text(`Blood Pressure: ${currentHealthRecord.blood_pressure.systolic}/${currentHealthRecord.blood_pressure.diastolic} mmHg`, 20, 150);
+      }
+      if (currentHealthRecord.heart_rate) {
+        doc.text(`Heart Rate: ${currentHealthRecord.heart_rate} bpm`, 20, 158);
+      }
+  
+      // Current Medications
+      doc.setFontSize(16);
+      doc.text('Current Medications', 20, 174);
+      doc.setFontSize(12);
+      const medications = Array.isArray(currentHealthRecord.medications)
+        ? currentHealthRecord.medications.join(', ')
+        : currentHealthRecord.medications || 'N/A';
+      const splitMeds = doc.splitTextToSize(`Medications: ${medications}`, 170);
+      doc.text(splitMeds, 20, 184);
+  
+      // Current Doctor Notes
+      doc.setFontSize(16);
+      doc.text('Current Doctor Notes', 20, 200);
+      doc.setFontSize(12);
+      const notes = currentHealthRecord.doctor_notes || 'N/A';
+      const splitNotes = doc.splitTextToSize(notes, 170);
+      doc.text(splitNotes, 20, 210);
+
+      // Past Health Records Section
+      if (pastRecords && pastRecords.length > 0) {
+        doc.addPage();
+        doc.setFontSize(20);
+        doc.setTextColor(0, 128, 128);
+        doc.text('Past Health Records', 105, 20, { align: 'center' });
+        doc.setDrawColor(0, 128, 128);
+        doc.line(20, 25, 190, 25);
+
+        let yPosition = 40;
+        pastRecords.forEach((record, index) => {
+          if (yPosition > 250) {
+            doc.addPage();
+            yPosition = 40;
+          }
+
+          doc.setFontSize(14);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`Record #${index + 1} - ${formatDate(record.visit_date)}`, 20, yPosition);
+          
+          doc.setFontSize(12);
+          yPosition += 10;
+          doc.text(`Illness: ${record.illness || 'N/A'}`, 20, yPosition);
+          
+          yPosition += 10;
+          doc.text(`Doctor: ${record.doctor_name || 'N/A'}`, 20, yPosition);
+          
+          yPosition += 10;
+          if (record.blood_pressure) {
+            doc.text(`Blood Pressure: ${record.blood_pressure.systolic}/${record.blood_pressure.diastolic} mmHg`, 20, yPosition);
+            yPosition += 10;
+          }
+          
+          if (record.heart_rate) {
+            doc.text(`Heart Rate: ${record.heart_rate} bpm`, 20, yPosition);
+            yPosition += 10;
+          }
+
+          const pastMedications = Array.isArray(record.medications)
+            ? record.medications.join(', ')
+            : record.medications || 'N/A';
+          const splitPastMeds = doc.splitTextToSize(`Medications: ${pastMedications}`, 170);
+          doc.text(splitPastMeds, 20, yPosition);
+          yPosition += splitPastMeds.length * 7;
+
+          const pastNotes = record.doctor_notes || 'N/A';
+          const splitPastNotes = doc.splitTextToSize(`Notes: ${pastNotes}`, 170);
+          doc.text(splitPastNotes, 20, yPosition);
+          yPosition += splitPastNotes.length * 7 + 10;
+
+          // Add a separator line between records
+          doc.setDrawColor(200);
+          doc.line(20, yPosition, 190, yPosition);
+          yPosition += 10;
+        });
+      }
+  
+      // Footer
+      doc.setFontSize(10);
+      doc.setTextColor(150);
+      doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 290);
+      doc.text('© Family Health Records', 105, 290, { align: 'center' });
+  
+      // Save the PDF
+      doc.save(`${member.familyMember.name}-health-record.pdf`);
+      toast.success('PDF generated successfully');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF');
+    }
+  };
+
+  const generateQRCode = async () => {
+    if (!member || !currentHealthRecord) {
+      toast.error("No health record data available");
+      return;
+    }
+  
+    try {
+      // Generate PDF first
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      // Header
+      doc.setFontSize(24);
+      doc.setTextColor(0, 128, 128);
+      doc.text('Family Health Records', 105, 20, { align: 'center' });
+      doc.setDrawColor(0, 128, 128);
+      doc.line(20, 25, 190, 25);
+
+      // Member Info Section
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text('Member Information', 20, 40);
+      doc.setFontSize(12);
+      doc.text(`Name: ${member.familyMember.name}`, 20, 50);
+      doc.text(`Email: ${member.familyMember.email || 'N/A'}`, 20, 58);
+      doc.text(`Relation: ${member.familyMember.relation || 'N/A'}`, 20, 66);
+      doc.text(`Last Visit: ${formatDate(member.familyMember.last_doctor_visit) || 'N/A'}`, 20, 74);
+
+      // Current Health Record Section
+      doc.setFontSize(16);
+      doc.text('Current Health Record', 20, 90);
+      doc.setFontSize(12);
+      doc.text(`Illness: ${currentHealthRecord.illness || 'N/A'}`, 20, 100);
+      doc.text(`Doctor: ${currentHealthRecord.doctor_name || 'N/A'}`, 20, 108);
+      doc.text(`Visit Date: ${formatDate(currentHealthRecord.visit_date) || 'N/A'}`, 20, 116);
+      doc.text(`Follow-up Date: ${formatDate(currentHealthRecord.follow_up_date) || 'N/A'}`, 20, 124);
+
+      // Current Vital Signs
+      doc.setFontSize(16);
+      doc.text('Current Vital Signs', 20, 140);
+      doc.setFontSize(12);
+      if (currentHealthRecord.blood_pressure) {
+        doc.text(`Blood Pressure: ${currentHealthRecord.blood_pressure.systolic}/${currentHealthRecord.blood_pressure.diastolic} mmHg`, 20, 150);
+      }
+      if (currentHealthRecord.heart_rate) {
+        doc.text(`Heart Rate: ${currentHealthRecord.heart_rate} bpm`, 20, 158);
+      }
+
+      // Current Medications
+      doc.setFontSize(16);
+      doc.text('Current Medications', 20, 174);
+      doc.setFontSize(12);
+      const medications = Array.isArray(currentHealthRecord.medications)
+        ? currentHealthRecord.medications.join(', ')
+        : currentHealthRecord.medications || 'N/A';
+      const splitMeds = doc.splitTextToSize(`Medications: ${medications}`, 170);
+      doc.text(splitMeds, 20, 184);
+
+      // Current Doctor Notes
+      doc.setFontSize(16);
+      doc.text('Current Doctor Notes', 20, 200);
+      doc.setFontSize(12);
+      const notes = currentHealthRecord.doctor_notes || 'N/A';
+      const splitNotes = doc.splitTextToSize(notes, 170);
+      doc.text(splitNotes, 20, 210);
+
+      // Past Health Records Section
+      if (pastRecords && pastRecords.length > 0) {
+        doc.addPage();
+        doc.setFontSize(20);
+        doc.setTextColor(0, 128, 128);
+        doc.text('Past Health Records', 105, 20, { align: 'center' });
+        doc.setDrawColor(0, 128, 128);
+        doc.line(20, 25, 190, 25);
+
+        let yPosition = 40;
+        pastRecords.forEach((record, index) => {
+          if (yPosition > 250) {
+            doc.addPage();
+            yPosition = 40;
+          }
+
+          doc.setFontSize(14);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`Record #${index + 1} - ${formatDate(record.visit_date)}`, 20, yPosition);
+          
+          doc.setFontSize(12);
+          yPosition += 10;
+          doc.text(`Illness: ${record.illness || 'N/A'}`, 20, yPosition);
+          
+          yPosition += 10;
+          doc.text(`Doctor: ${record.doctor_name || 'N/A'}`, 20, yPosition);
+          
+          yPosition += 10;
+          if (record.blood_pressure) {
+            doc.text(`Blood Pressure: ${record.blood_pressure.systolic}/${record.blood_pressure.diastolic} mmHg`, 20, yPosition);
+            yPosition += 10;
+          }
+          
+          if (record.heart_rate) {
+            doc.text(`Heart Rate: ${record.heart_rate} bpm`, 20, yPosition);
+            yPosition += 10;
+          }
+
+          const pastMedications = Array.isArray(record.medications)
+            ? record.medications.join(', ')
+            : record.medications || 'N/A';
+          const splitPastMeds = doc.splitTextToSize(`Medications: ${pastMedications}`, 170);
+          doc.text(splitPastMeds, 20, yPosition);
+          yPosition += splitPastMeds.length * 7;
+
+          const pastNotes = record.doctor_notes || 'N/A';
+          const splitPastNotes = doc.splitTextToSize(`Notes: ${pastNotes}`, 170);
+          doc.text(splitPastNotes, 20, yPosition);
+          yPosition += splitPastNotes.length * 7 + 10;
+
+          // Add a separator line between records
+          doc.setDrawColor(200);
+          doc.line(20, yPosition, 190, yPosition);
+          yPosition += 10;
+        });
+      }
+
+      // Footer
+      doc.setFontSize(10);
+      doc.setTextColor(150);
+      doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 290);
+      doc.text('© Family Health Records', 105, 290, { align: 'center' });
+
+      // Convert PDF to base64
+      const pdfBase64 = doc.output('datauristring');
+      console.log('Generated PDF base64 length:', pdfBase64.length);
+
+      // Send PDF to backend for Cloudinary upload
+      const response = await axios.post(
+        `${API_BASE_URL}/api/emergency/download/${member.familyMember._id}`,
+        {
+          pdfBase64,
+          memberId: member.familyMember._id,
+          timestamp: Date.now()
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        // Create a unique identifier for this record
+        const recordId = `${member.familyMember.name}-${Date.now()}`;
+        
+        // Store the full data in localStorage
+        const fullData = {
+          member: {
+            name: member.familyMember.name,
+            email: member.familyMember.email,
+            relation: member.familyMember.relation,
+          },
+          currentHealthRecord: {
+            illness: currentHealthRecord.illness,
+            doctor_name: currentHealthRecord.doctor_name,
+            doctor_notes: currentHealthRecord.doctor_notes,
+            visit_date: currentHealthRecord.visit_date,
+            follow_up_date: currentHealthRecord.follow_up_date,
+            medications: currentHealthRecord.medications,
+            blood_pressure: currentHealthRecord.blood_pressure,
+            heart_rate: currentHealthRecord.heart_rate,
+          },
+          pastRecords: pastRecords.map(record => ({
+            illness: record.illness,
+            doctor_name: record.doctor_name,
+            doctor_notes: record.doctor_notes,
+            visit_date: record.visit_date,
+            follow_up_date: record.follow_up_date,
+            medications: record.medications,
+            blood_pressure: record.blood_pressure,
+            heart_rate: record.heart_rate,
+          })),
+          timestamp: new Date().toISOString(),
+        };
+
+        // Store data in localStorage
+        localStorage.setItem(`health-record-data-${recordId}`, JSON.stringify(fullData));
+
+        // Create QR code data with the Cloudinary URL and recordId
+        const qrData = {
+          pdfUrl: response.data.data.pdfUrl,
+          recordId: recordId,
+          type: 'health_record',
+          timestamp: new Date().toISOString(),
+        };
+        
+        setQrData(JSON.stringify(qrData));
+        setShowQRCode(true);
+      } else {
+        toast.error('Failed to upload PDF');
+      }
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      toast.error('Failed to generate QR code');
+    }
+  };
+  
+
   if (loading) return <p className="text-center">Loading...</p>;
 
   if (!member) return <p className="text-center text-red-500 text-lg">Member not found!</p>;
@@ -384,10 +719,10 @@ const MemberDetails = () => {
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
         </div>
       ) : (
-        <>
+        <div>
           <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex justify-center items-center">
@@ -398,7 +733,25 @@ const MemberDetails = () => {
                 />
               </div>
               <div className="text-left space-y-3 col-span-2">
-                <h1 className="text-3xl font-bold text-teal-600">{member.familyMember.name}</h1>
+                <div className="flex justify-between items-start">
+                  <h1 className="text-3xl font-bold text-teal-600">{member.familyMember.name}</h1>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={generatePDF}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <FaDownload className="w-5 h-5" />
+                      <span>Download PDF</span>
+                    </button>
+                    <button
+                      onClick={generateQRCode}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95"
+                    >
+                      <FaQrcode className="w-5 h-5" />
+                      <span>Generate QR</span>
+                    </button>
+                  </div>
+                </div>
                 <p className="text-gray-700"><strong>Email:</strong> {member.familyMember.email || "Please add your email address"}</p>
                 <p className="text-gray-700"><strong>Relation:</strong> {member.familyMember.relation || "Please add your relationship"}</p>
                 <p className="text-gray-700"><strong>Last Doctor Visit:</strong> {formatDate(member.familyMember.last_doctor_visit) || "N/A"}</p>
@@ -775,7 +1128,9 @@ const MemberDetails = () => {
                 )}
               </div>
             </div>
-          )}
+            )}
+
+          
 
           {/* Image Viewer Modal */}
           {isImageViewerOpen && imageViewerImages.length > 0 && (
@@ -789,7 +1144,74 @@ const MemberDetails = () => {
             />
           )}
 
-        </>
+          {/* QR Code Modal */}
+          {showQRCode && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-bold text-gray-800">Health Record QR Code</h3>
+                  <button
+                    onClick={() => setShowQRCode(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <FaWindowClose size={24} />
+                  </button>
+                </div>
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="p-4 bg-white rounded-lg shadow-md">
+                    <QRCode
+                      value={JSON.parse(qrData).pdfUrl}
+                      size={256}
+                      level="H"
+                      includeMargin={true}
+                      renderAs="svg"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600 text-center">
+                    Scan this QR code to access the health record data. The QR code contains a reference to the full health record information.
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={generatePDF}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      <FaDownload className="w-4 h-4" />
+                      <span>Download PDF</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        try {
+                          const data = JSON.parse(qrData);
+                          const fullData = JSON.parse(localStorage.getItem(`health-record-data-${data.recordId}`));
+                          if (!fullData) {
+                            toast.error('Health record data not found');
+                            return;
+                          }
+                          const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${fullData.member.name}-health-record.json`;
+                          document.body.appendChild(a);
+                          a.click();
+                          window.URL.revokeObjectURL(url);
+                          document.body.removeChild(a);
+                        } catch (error) {
+                          toast.error('Failed to download JSON file');
+                          console.error('Error downloading JSON:', error);
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
+                    >
+                      <FaDownload className="w-4 h-4" />
+                      <span>Download JSON</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
