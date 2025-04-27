@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { motion } from 'framer-motion';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import PropTypes from 'prop-types';
 
 const HealthChart = ({ data, title, dataKey, color, secondaryDataKey, secondaryColor }) => {

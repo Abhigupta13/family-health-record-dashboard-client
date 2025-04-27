@@ -32,7 +32,7 @@ const HealthTimeline = ({
   onImageClick
 }) => {
   const sortedRecords = [...healthRecords].sort(
-    (a, b) => new Date(a.visit_date) - new Date(b.visit_date)
+    (a, b) => new Date(b.visit_date) - new Date(a.visit_date)
   );
 
   const handleAddButtonClick = () => {

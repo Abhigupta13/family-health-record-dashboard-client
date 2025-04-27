@@ -629,73 +629,82 @@ const MemberDetails = () => {
 
       // Convert PDF to base64
       const pdfBase64 = doc.output('datauristring');
-      console.log('Generated PDF base64 length:', pdfBase64.length);
+      
+      // Send PDF to backend for S3 upload
+      try {
+        // Create a Blob from the PDF data
+        const base64Data = pdfBase64.split(',')[1];
+        const pdfBlob = await fetch(`data:application/pdf;base64,${base64Data}`).then(res => res.blob());
+        
+        // Create FormData and append the PDF
+        const formData = new FormData();
+        formData.append('pdf', pdfBlob, `health_record_${member.familyMember._id}_${Date.now()}.pdf`);
+        formData.append('memberId', member.familyMember._id);
+        formData.append('timestamp', Date.now());
 
-      // Send PDF to backend for Cloudinary upload
-      const response = await axios.post(
-        `${API_BASE_URL}/api/emergency/download/${member.familyMember._id}`,
-        {
-          pdfBase64,
-          memberId: member.familyMember._id,
-          timestamp: Date.now()
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+        const response = await axios.post(
+          `${API_BASE_URL}/api/emergency/download/${member.familyMember._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          // Create a unique identifier for this record
+          const recordId = `${member.familyMember.name}-${Date.now()}`;
+          
+          // Store the full data in localStorage
+          const fullData = {
+            member: {
+              name: member.familyMember.name,
+              email: member.familyMember.email,
+              relation: member.familyMember.relation,
+            },
+            currentHealthRecord: {
+              illness: currentHealthRecord.illness,
+              doctor_name: currentHealthRecord.doctor_name,
+              doctor_notes: currentHealthRecord.doctor_notes,
+              visit_date: currentHealthRecord.visit_date,
+              follow_up_date: currentHealthRecord.follow_up_date,
+              medications: currentHealthRecord.medications,
+              blood_pressure: currentHealthRecord.blood_pressure,
+              heart_rate: currentHealthRecord.heart_rate,
+            },
+            pastRecords: pastRecords.map(record => ({
+              illness: record.illness,
+              doctor_name: record.doctor_name,
+              doctor_notes: record.doctor_notes,
+              visit_date: record.visit_date,
+              follow_up_date: record.follow_up_date,
+              medications: record.medications,
+              blood_pressure: record.blood_pressure,
+              heart_rate: record.heart_rate,
+            })),
+            timestamp: new Date().toISOString(),
+          };
+
+          // Store data in localStorage
+          localStorage.setItem(`health-record-data-${recordId}`, JSON.stringify(fullData));
+
+          // Create QR code data with the S3 URL and recordId
+          setQrData(JSON.stringify({
+            pdfUrl: response.data.data.pdfUrl,
+            recordId: recordId
+          }));
+
+          // Show success message
+          setShowQRCode(true);
+          toast.success('PDF generated and uploaded successfully!');
+        } else {
+          throw new Error(response.data.message || 'Failed to upload PDF');
         }
-      );
-
-      if (response.data.success) {
-        // Create a unique identifier for this record
-        const recordId = `${member.familyMember.name}-${Date.now()}`;
-        
-        // Store the full data in localStorage
-        const fullData = {
-          member: {
-            name: member.familyMember.name,
-            email: member.familyMember.email,
-            relation: member.familyMember.relation,
-          },
-          currentHealthRecord: {
-            illness: currentHealthRecord.illness,
-            doctor_name: currentHealthRecord.doctor_name,
-            doctor_notes: currentHealthRecord.doctor_notes,
-            visit_date: currentHealthRecord.visit_date,
-            follow_up_date: currentHealthRecord.follow_up_date,
-            medications: currentHealthRecord.medications,
-            blood_pressure: currentHealthRecord.blood_pressure,
-            heart_rate: currentHealthRecord.heart_rate,
-          },
-          pastRecords: pastRecords.map(record => ({
-            illness: record.illness,
-            doctor_name: record.doctor_name,
-            doctor_notes: record.doctor_notes,
-            visit_date: record.visit_date,
-            follow_up_date: record.follow_up_date,
-            medications: record.medications,
-            blood_pressure: record.blood_pressure,
-            heart_rate: record.heart_rate,
-          })),
-          timestamp: new Date().toISOString(),
-        };
-
-        // Store data in localStorage
-        localStorage.setItem(`health-record-data-${recordId}`, JSON.stringify(fullData));
-
-        // Create QR code data with the Cloudinary URL and recordId
-        const qrData = {
-          pdfUrl: response.data.data.pdfUrl,
-          recordId: recordId,
-          type: 'health_record',
-          timestamp: new Date().toISOString(),
-        };
-        
-        setQrData(JSON.stringify(qrData));
-        setShowQRCode(true);
-      } else {
-        toast.error('Failed to upload PDF');
+      } catch (error) {
+        console.error('Error uploading PDF:', error);
+        toast.error(error.response?.data?.message || 'Failed to upload PDF. Please try again.');
       }
     } catch (error) {
       console.error('Error generating QR code:', error);
