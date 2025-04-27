@@ -6,7 +6,7 @@ import {
 import 'react-vertical-timeline-component/style.min.css';
 import { motion } from 'framer-motion';
 import { FaStethoscope, FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
-import { Card, CardContent } from './ui/Card';
+import { Card, CardContent } from './ui/card';
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
