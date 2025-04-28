@@ -37,7 +37,7 @@ const HealthTimeline = ({
 
   const handleAddButtonClick = () => {
     onSetSelectedRecord({
-      illness: "",
+      diagnosis: "",
       doctor_name: "",
       doctor_notes: "",
       visit_date: new Date().toISOString().split('T')[0],
@@ -92,7 +92,7 @@ const HealthTimeline = ({
                 >
                   <div className="flex flex-col lg:flex-row justify-between items-start p-4 bg-gray-50 rounded-lg transition-colors cursor-pointer" onClick={() => onViewRecord(record)}>
                     <div className="flex-1 space-y-2">
-                      <h3 className="text-lg lg:text-xl font-semibold text-teal-700">{record.illness}</h3>
+                      <h3 className="text-lg lg:text-xl font-semibold text-teal-700">{record.diagnosis}</h3>
                       <h4 className="text-sm text-gray-600">{record.doctor_name}</h4>
                       <p className="mt-1 text-gray-500">{record.doctor_notes}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -162,15 +162,12 @@ const HealthTimeline = ({
 HealthTimeline.propTypes = {
   healthRecords: PropTypes.arrayOf(PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    illness: PropTypes.string.isRequired,
+    diagnosis: PropTypes.string.isRequired,
     doctor_name: PropTypes.string.isRequired,
     doctor_notes: PropTypes.string.isRequired,
     visit_date: PropTypes.string.isRequired,
     follow_up_date: PropTypes.string,
-    medications: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string)
-    ]),
+    medications: PropTypes.string,
     blood_pressure: PropTypes.shape({
       systolic: PropTypes.number,
       diastolic: PropTypes.number

@@ -70,6 +70,7 @@ const MemberDetails = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPastRecords(response.data.data.healthRecords);
+      console.log(response.data.data.healthRecords[0])
       setCurrentHealthRecord(response.data.data.healthRecords[0] || null);
     } catch (error) {
       toast.error("Error fetching health records");
@@ -82,7 +83,7 @@ const MemberDetails = () => {
       ...record,
       visit_date: record.visit_date?.split('T')[0],
       follow_up_date: record.follow_up_date?.split('T')[0],
-      medications: Array.isArray(record.medications) ? record.medications.join(', ') : record.medications || ''
+      medications:record.medications || ''
     });
     setModalType("view");
     setViewMode('view');
@@ -100,7 +101,7 @@ const MemberDetails = () => {
 
   const handleAddNewRecord = () => {
     setSelectedRecord({
-      illness: "",
+      diagnosis: "",
       doctor_name: "",
       doctor_notes: "",
       visit_date: new Date().toISOString().split('T')[0],
@@ -148,7 +149,7 @@ const MemberDetails = () => {
       const formData = new FormData();
 
       // Add basic fields
-      formData.append('illness', selectedRecord.illness || '');
+      formData.append('diagnosis', selectedRecord.diagnosis || '');
       formData.append('doctor_name', selectedRecord.doctor_name || '');
       formData.append('doctor_notes', selectedRecord.doctor_notes || '');
       formData.append('medications', selectedRecord.medications || '');
@@ -216,7 +217,7 @@ const MemberDetails = () => {
     try {
       const formData = new FormData();
 
-      formData.append('illness', selectedRecord.illness || '');
+      formData.append('diagnosis', selectedRecord.diagnosis || '');
       formData.append('doctor_name', selectedRecord.doctor_name || '');
       formData.append('doctor_notes', selectedRecord.doctor_notes || '');
       formData.append('medications', selectedRecord.medications || '');
@@ -286,7 +287,7 @@ const MemberDetails = () => {
       ...record,
       visit_date: record.visit_date?.split('T')[0],
       follow_up_date: record.follow_up_date?.split('T')[0],
-      medications: Array.isArray(record.medications) ? record.medications.join(', ') : record.medications || ''
+      medications: record.medications || ''
     });
     setModalType("edit");
     setViewMode('edit');
@@ -300,6 +301,7 @@ const MemberDetails = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       toast.success('Record deleted successfully');
+      closeModal();
       fetchHealthRecords(localStorage.getItem("token"));
     } catch (error) {
       toast.error('Failed to delete record');
@@ -311,7 +313,7 @@ const MemberDetails = () => {
     setModalType(null);
     setViewMode('view');
     setSelectedRecord({
-      illness: "",
+      diagnosis: "",
       doctor_name: "",
       doctor_notes: "",
       visit_date: "",
@@ -389,7 +391,7 @@ const MemberDetails = () => {
       doc.setFontSize(16);
       doc.text('Current Health Record', 20, 90);
       doc.setFontSize(12);
-      doc.text(`Illness: ${currentHealthRecord.illness || 'N/A'}`, 20, 100);
+      doc.text(`diagnosis: ${currentHealthRecord.diagnosis || 'N/A'}`, 20, 100);
       doc.text(`Doctor: ${currentHealthRecord.doctor_name || 'N/A'}`, 20, 108);
       doc.text(`Visit Date: ${formatDate(currentHealthRecord.visit_date) || 'N/A'}`, 20, 116);
       doc.text(`Follow-up Date: ${formatDate(currentHealthRecord.follow_up_date) || 'N/A'}`, 20, 124);
@@ -409,9 +411,7 @@ const MemberDetails = () => {
       doc.setFontSize(16);
       doc.text('Current Medications', 20, 174);
       doc.setFontSize(12);
-      const medications = Array.isArray(currentHealthRecord.medications)
-        ? currentHealthRecord.medications.join(', ')
-        : currentHealthRecord.medications || 'N/A';
+      const medications = currentHealthRecord.medications || 'N/A';
       const splitMeds = doc.splitTextToSize(`Medications: ${medications}`, 170);
       doc.text(splitMeds, 20, 184);
   
@@ -445,7 +445,7 @@ const MemberDetails = () => {
           
           doc.setFontSize(12);
           yPosition += 10;
-          doc.text(`Illness: ${record.illness || 'N/A'}`, 20, yPosition);
+          doc.text(`diagnosis: ${record.diagnosis || 'N/A'}`, 20, yPosition);
           
           yPosition += 10;
           doc.text(`Doctor: ${record.doctor_name || 'N/A'}`, 20, yPosition);
@@ -461,9 +461,7 @@ const MemberDetails = () => {
             yPosition += 10;
           }
 
-          const pastMedications = Array.isArray(record.medications)
-            ? record.medications.join(', ')
-            : record.medications || 'N/A';
+          const pastMedications = record.medications || 'N/A';
           const splitPastMeds = doc.splitTextToSize(`Medications: ${pastMedications}`, 170);
           doc.text(splitPastMeds, 20, yPosition);
           yPosition += splitPastMeds.length * 7;
@@ -530,7 +528,7 @@ const MemberDetails = () => {
       doc.setFontSize(16);
       doc.text('Current Health Record', 20, 90);
       doc.setFontSize(12);
-      doc.text(`Illness: ${currentHealthRecord.illness || 'N/A'}`, 20, 100);
+      doc.text(`diagnosis: ${currentHealthRecord.diagnosis || 'N/A'}`, 20, 100);
       doc.text(`Doctor: ${currentHealthRecord.doctor_name || 'N/A'}`, 20, 108);
       doc.text(`Visit Date: ${formatDate(currentHealthRecord.visit_date) || 'N/A'}`, 20, 116);
       doc.text(`Follow-up Date: ${formatDate(currentHealthRecord.follow_up_date) || 'N/A'}`, 20, 124);
@@ -550,9 +548,7 @@ const MemberDetails = () => {
       doc.setFontSize(16);
       doc.text('Current Medications', 20, 174);
       doc.setFontSize(12);
-      const medications = Array.isArray(currentHealthRecord.medications)
-        ? currentHealthRecord.medications.join(', ')
-        : currentHealthRecord.medications || 'N/A';
+      const medications = currentHealthRecord.medications || 'N/A';
       const splitMeds = doc.splitTextToSize(`Medications: ${medications}`, 170);
       doc.text(splitMeds, 20, 184);
 
@@ -586,7 +582,7 @@ const MemberDetails = () => {
           
           doc.setFontSize(12);
           yPosition += 10;
-          doc.text(`Illness: ${record.illness || 'N/A'}`, 20, yPosition);
+          doc.text(`diagnosis: ${record.diagnosis || 'N/A'}`, 20, yPosition);
           
           yPosition += 10;
           doc.text(`Doctor: ${record.doctor_name || 'N/A'}`, 20, yPosition);
@@ -665,7 +661,7 @@ const MemberDetails = () => {
               relation: member.familyMember.relation,
             },
             currentHealthRecord: {
-              illness: currentHealthRecord.illness,
+              diagnosis: currentHealthRecord.diagnosis,
               doctor_name: currentHealthRecord.doctor_name,
               doctor_notes: currentHealthRecord.doctor_notes,
               visit_date: currentHealthRecord.visit_date,
@@ -675,7 +671,7 @@ const MemberDetails = () => {
               heart_rate: currentHealthRecord.heart_rate,
             },
             pastRecords: pastRecords.map(record => ({
-              illness: record.illness,
+              diagnosis: record.diagnosis,
               doctor_name: record.doctor_name,
               doctor_notes: record.doctor_notes,
               visit_date: record.visit_date,
@@ -774,7 +770,7 @@ const MemberDetails = () => {
                 <div className="space-y-4">
                   <div className="bg-white p-4 rounded-lg shadow-sm">
                     <h3 className="text-lg font-medium text-gray-700 mb-2">Diagnosis</h3>
-                    <p className="text-gray-600">{currentHealthRecord.illness}</p>
+                    <p className="text-gray-600">{currentHealthRecord.diagnosis}</p>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -916,8 +912,8 @@ const MemberDetails = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="font-semibold">Illness</p>
-                        <p className="text-gray-600">{selectedRecord.illness}</p>
+                        <p className="font-semibold">Diagnosis</p>
+                        <p className="text-gray-600">{selectedRecord.diagnosis}</p>
                       </div>
                       <div>
                         <p className="font-semibold">Doctor Name</p>
@@ -977,11 +973,11 @@ const MemberDetails = () => {
                   <form onSubmit={modalType === 'add' ? handleAddRecord : handleUpdateRecord} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Illness *</label>
+                        <label className="block text-sm font-medium text-gray-700">Diagnosis *</label>
                         <input
                           type="text"
-                          value={selectedRecord.illness || ""}
-                          onChange={(e) => setSelectedRecord({ ...selectedRecord, illness: e.target.value })}
+                          value={selectedRecord.diagnosis || ""}
+                          onChange={(e) => setSelectedRecord({ ...selectedRecord, diagnosis: e.target.value })}
                           className="w-full p-2 border border-gray-300 rounded-md"
                           required
                         />
@@ -1012,7 +1008,7 @@ const MemberDetails = () => {
                           type="number"
                           min="60"
                           max="250"
-                          value={selectedRecord.blood_pressure?.systolic || ""}
+                          value={selectedRecord.blood_pressure?.systolic || null}
                           onChange={(e) => setSelectedRecord({
                             ...selectedRecord,
                             blood_pressure: {
@@ -1030,7 +1026,7 @@ const MemberDetails = () => {
                           type="number"
                           min="40"
                           max="150"
-                          value={selectedRecord.blood_pressure?.diastolic || ""}
+                          value={selectedRecord.blood_pressure?.diastolic || null}
                           onChange={(e) => setSelectedRecord({
                             ...selectedRecord,
                             blood_pressure: {
